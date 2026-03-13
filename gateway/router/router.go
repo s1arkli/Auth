@@ -6,4 +6,5 @@ import (
 
 func Api(r *gin.Engine) {
 
+	r.POST("/register")
 }

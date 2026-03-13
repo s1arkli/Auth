@@ -1,9 +1,9 @@
-create table `account` (
-    id bigint not null auto_increment,
-    uid bigint not null ,
-    account varchar(64) not null comment '账号',
-    password varchar(128) not null comment '密码',
-    primary key (`id`),
-    unique key `uk_uid` (`uid`),
-    unique key `uk_account` (`account`)
-)engine = InnoDB DEFAULT CHARSET = utf8mb4 Collate = utf8mb4_general_ci;
+CREATE TABLE account (
+    id BIGSERIAL PRIMARY KEY,
+    uid BIGINT NOT NULL UNIQUE,
+    account VARCHAR(64) NOT NULL UNIQUE,
+    password VARCHAR(128) NOT NULL
+);
+COMMENT ON COLUMN account.uid IS '用户唯一标识';
+COMMENT ON COLUMN account.account IS '账号';
+COMMENT ON COLUMN account.password IS '密码';
