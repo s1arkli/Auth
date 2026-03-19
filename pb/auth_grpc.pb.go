@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v6.33.4
-// source: auth.proto
+// source: jwt.proto
 
 package auth_pb
 
@@ -20,12 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthService_Register_FullMethodName = "/grpc.proto.auth.AuthService/Register"
-	AuthService_Login_FullMethodName    = "/grpc.proto.auth.AuthService/Login"
-	AuthService_Refresh_FullMethodName  = "/grpc.proto.auth.AuthService/Refresh"
+	AuthService_Register_FullMethodName = "/grpc.proto.jwt.AuthService/Register"
+	AuthService_Login_FullMethodName    = "/grpc.proto.jwt.AuthService/Login"
+	AuthService_Refresh_FullMethodName  = "/grpc.proto.jwt.AuthService/Refresh"
 )
 
-// AuthServiceClient is the client API for AuthService service.
+// AuthServiceClient is the client API for AuthService application.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
@@ -72,7 +72,7 @@ func (c *authServiceClient) Refresh(ctx context.Context, in *RefreshReq, opts ..
 	return out, nil
 }
 
-// AuthServiceServer is the server API for AuthService service.
+// AuthServiceServer is the server API for AuthService application.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility.
 type AuthServiceServer interface {
@@ -101,8 +101,8 @@ func (UnimplementedAuthServiceServer) Refresh(context.Context, *RefreshReq) (*Re
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 func (UnimplementedAuthServiceServer) testEmbeddedByValue()                     {}
 
-// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AuthServiceServer will
+// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this application.
+// Use of this interfaces is not recommended, as added methods to AuthServiceServer will
 // result in compilation errors.
 type UnsafeAuthServiceServer interface {
 	mustEmbedUnimplementedAuthServiceServer()
@@ -173,11 +173,11 @@ func _AuthService_Refresh_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
+// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService application.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "grpc.proto.auth.AuthService",
+	ServiceName: "grpc.proto.jwt.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -194,5 +194,5 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "auth.proto",
+	Metadata: "jwt.proto",
 }

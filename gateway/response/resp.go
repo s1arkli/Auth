@@ -3,7 +3,7 @@ package response
 import (
 	"github.com/gin-gonic/gin"
 
-	"auth/gateway/ecode"
+	"mono/gateway/ecode"
 )
 
 type Response struct {
@@ -24,5 +24,12 @@ func Success(c *gin.Context, data interface{}) {
 		Code: 0,
 		Msg:  "success",
 		Data: data,
+	})
+}
+
+func AuthFail(c *gin.Context) {
+	c.JSON(200, &Response{
+		Code: 400,
+		Msg:  "auth fail",
 	})
 }

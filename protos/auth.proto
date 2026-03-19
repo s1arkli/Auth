@@ -4,12 +4,11 @@ import "google/protobuf/empty.proto";
 
 package grpc.proto.auth;
 
-option go_package = "auth/pb/auth_pb";
+option go_package = "jwt/pb/auth_pb";
 
 message RegisterReq {
   string account = 1;
   string password = 2;
-  string re_password = 3;
 }
 
 message LoginReq {
