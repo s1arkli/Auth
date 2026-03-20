@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        v6.33.4
-// source: jwt.proto
+// source: auth.proto
 
 package auth_pb
 
@@ -225,6 +225,7 @@ func (x *RefreshReq) GetRefreshToken() string {
 type RefreshResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -266,12 +267,19 @@ func (x *RefreshResp) GetAccessToken() string {
 	return ""
 }
 
+func (x *RefreshResp) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 const file_auth_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"jwt.proto\x12\x0fgrpc.proto.jwt\x1a\x1bgoogle/protobuf/empty.proto\"C\n" +
+	"auth.proto\x12\x0fgrpc.proto.auth\x1a\x1bgoogle/protobuf/empty.proto\"C\n" +
 	"\vRegisterReq\x12\x18\n" +
 	"\aaccount\x18\x01 \x01(\tR\aaccount\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\"@\n" +
@@ -283,13 +291,14 @@ const file_auth_proto_rawDesc = "" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"1\n" +
 	"\n" +
 	"RefreshReq\x12#\n" +
-	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"0\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"U\n" +
 	"\vRefreshResp\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken2\xd5\x01\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken2\xd5\x01\n" +
 	"\vAuthService\x12@\n" +
-	"\bRegister\x12\x1c.grpc.proto.jwt.RegisterReq\x1a\x16.google.protobuf.Empty\x12>\n" +
-	"\x05Login\x12\x19.grpc.proto.jwt.LoginReq\x1a\x1a.grpc.proto.jwt.LoginResp\x12D\n" +
-	"\aRefresh\x12\x1b.grpc.proto.jwt.RefreshReq\x1a\x1c.grpc.proto.jwt.RefreshRespB\x11Z\x0fauth/pb/auth_pbb\x06proto3"
+	"\bRegister\x12\x1c.grpc.proto.auth.RegisterReq\x1a\x16.google.protobuf.Empty\x12>\n" +
+	"\x05Login\x12\x19.grpc.proto.auth.LoginReq\x1a\x1a.grpc.proto.auth.LoginResp\x12D\n" +
+	"\aRefresh\x12\x1b.grpc.proto.auth.RefreshReq\x1a\x1c.grpc.proto.auth.RefreshRespB\x10Z\x0ejwt/pb/auth_pbb\x06proto3"
 
 var (
 	file_auth_proto_rawDescOnce sync.Once
@@ -305,20 +314,20 @@ func file_auth_proto_rawDescGZIP() []byte {
 
 var file_auth_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_auth_proto_goTypes = []any{
-	(*RegisterReq)(nil),   // 0: grpc.proto.jwt.RegisterReq
-	(*LoginReq)(nil),      // 1: grpc.proto.jwt.LoginReq
-	(*LoginResp)(nil),     // 2: grpc.proto.jwt.LoginResp
-	(*RefreshReq)(nil),    // 3: grpc.proto.jwt.RefreshReq
-	(*RefreshResp)(nil),   // 4: grpc.proto.jwt.RefreshResp
+	(*RegisterReq)(nil),   // 0: grpc.proto.auth.RegisterReq
+	(*LoginReq)(nil),      // 1: grpc.proto.auth.LoginReq
+	(*LoginResp)(nil),     // 2: grpc.proto.auth.LoginResp
+	(*RefreshReq)(nil),    // 3: grpc.proto.auth.RefreshReq
+	(*RefreshResp)(nil),   // 4: grpc.proto.auth.RefreshResp
 	(*emptypb.Empty)(nil), // 5: google.protobuf.Empty
 }
 var file_auth_proto_depIdxs = []int32{
-	0, // 0: grpc.proto.jwt.AuthService.Register:input_type -> grpc.proto.jwt.RegisterReq
-	1, // 1: grpc.proto.jwt.AuthService.Login:input_type -> grpc.proto.jwt.LoginReq
-	3, // 2: grpc.proto.jwt.AuthService.Refresh:input_type -> grpc.proto.jwt.RefreshReq
-	5, // 3: grpc.proto.jwt.AuthService.Register:output_type -> google.protobuf.Empty
-	2, // 4: grpc.proto.jwt.AuthService.Login:output_type -> grpc.proto.jwt.LoginResp
-	4, // 5: grpc.proto.jwt.AuthService.Refresh:output_type -> grpc.proto.jwt.RefreshResp
+	0, // 0: grpc.proto.auth.AuthService.Register:input_type -> grpc.proto.auth.RegisterReq
+	1, // 1: grpc.proto.auth.AuthService.Login:input_type -> grpc.proto.auth.LoginReq
+	3, // 2: grpc.proto.auth.AuthService.Refresh:input_type -> grpc.proto.auth.RefreshReq
+	5, // 3: grpc.proto.auth.AuthService.Register:output_type -> google.protobuf.Empty
+	2, // 4: grpc.proto.auth.AuthService.Login:output_type -> grpc.proto.auth.LoginResp
+	4, // 5: grpc.proto.auth.AuthService.Refresh:output_type -> grpc.proto.auth.RefreshResp
 	3, // [3:6] is the sub-list for method output_type
 	0, // [0:3] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

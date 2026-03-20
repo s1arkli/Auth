@@ -3,3 +3,6 @@ proto:
 	--go-grpc_out=./pb --go-grpc_opt=paths=source_relative \
 	--proto_path=./protos \
 	protos/*.proto
+
+doc:
+	swag init --dir ./gateway/service -g doc.go --parseDependency --output ./gateway/doc/app

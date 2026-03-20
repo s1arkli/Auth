@@ -14,7 +14,7 @@ var (
 
 func InitPgsql() {
 	dsn := fmt.Sprintf("host=localhost user=%s password=%s dbname=%s port=%s sslmode=disable TimeZone=Asia/Shanghai",
-		viper.GetString("pgsql.user"), viper.GetString("pgsql.pwd"), viper.GetString("pgsql.jwt"), viper.GetString("pgsql.port"))
+		viper.GetString("pgsql.user"), viper.GetString("pgsql.pwd"), viper.GetString("pgsql.db"), viper.GetString("pgsql.port"))
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)

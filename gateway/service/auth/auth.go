@@ -3,9 +3,10 @@ package auth
 import (
 	"github.com/gin-gonic/gin"
 
-	"auth/gateway/ecode"
-	"auth/gateway/response"
-	authpb "jwt/pb"
+	authpb "mono/pb"
+
+	"mono/gateway/ecode"
+	"mono/gateway/response"
 )
 
 var (
@@ -13,15 +14,20 @@ var (
 )
 
 func init() {
+	initAuthConn()
 	auth = authpb.NewAuthServiceClient(GetGrpcConn())
 }
 
+// Register 注册
+// @Summary
+// @Description
+// @Tags         account
+// @Accept       json
+// @Produce      json
+// @Param        request  body  RegisterRequest  true  "注册请求"
+// @Router       /account/register [post]
 func Register(c *gin.Context) {
-	req := struct {
-		Account    string `json:"account"`
-		Password   string `json:"password"`
-		RePassword string `json:"rePassword"`
-	}{}
+	req := new(RegisterRequest)
 
 	if err := c.ShouldBind(&req); err != nil {
 		response.Fail(c, ecode.ParamErr)
@@ -39,11 +45,16 @@ func Register(c *gin.Context) {
 	response.Success(c, "ok")
 }
 
+// Login 登录
+// @Summary
+// @Description
+// @Tags         account
+// @Accept       json
+// @Produce      json
+// @Param        request  body  LoginRequest  true  "注册请求"
+// @Router       /account/login [post]
 func Login(c *gin.Context) {
-	req := struct {
-		Account  string `json:"account"`
-		Password string `json:"password"`
-	}{}
+	req := new(LoginRequest)
 
 	if err := c.ShouldBind(&req); err != nil {
 		response.Fail(c, ecode.ParamErr)
@@ -61,22 +72,31 @@ func Login(c *gin.Context) {
 	response.Success(c, resp)
 }
 
+// Refresh 刷新token
+// @Summary
+// @Description
+// @Tags         account
+// @Accept       json
+// @Produce      json
+// @Param        Cookie  header  string  true  "Bearer token"
+// @Router       /account/refresh [post]
 func Refresh(c *gin.Context) {
-	req := struct {
-		RefreshToken string `json:"refresh_token"`
-	}{}
-
-	if err := c.ShouldBind(&req); err != nil {
+	rToken, err := c.Cookie("refresh_token")
+	if err != nil {
 		response.Fail(c, ecode.ParamErr)
 		return
 	}
 
 	resp, err := auth.Refresh(c, &authpb.RefreshReq{
-		RefreshToken: req.RefreshToken,
+		RefreshToken: rToken,
 	})
 	if err != nil {
+		c.SetCookie("refresh_token", "", -1, "/api/auth", "", true, true)
 		response.Fail(c, ecode.SystemErr)
 		return
 	}
-	response.Success(c, resp)
+
+	c.SetCookie("refresh_token", resp.RefreshToken, 7*24*3600, "/account/refresh", "", true, true)
+
+	response.Success(c, resp.AccessToken)
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"auth/gateway/cmd"
+	"mono/gateway/cmd"
 )
 
 func main() {

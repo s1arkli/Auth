@@ -1,11 +1,14 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
-	"auth/gateway/initial"
-	"auth/gateway/router"
+	"mono/gateway/initial"
+	"mono/gateway/router"
 )
 
 func init() {
@@ -18,9 +21,10 @@ var apiCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		r := gin.Default()
 
-		initial.Viper()
+		initial.Viper("./gateway/config.yaml")
 		router.Api(r)
 
-		_ = r.Run(initial.GatewayConfig.GetString(":" + "api.port"))
+		port := viper.GetString("api.port")
+		_ = r.Run(fmt.Sprintf(":%s", port))
 	},
 }

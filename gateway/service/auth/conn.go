@@ -9,8 +9,8 @@ var (
 	conn *grpc.ClientConn
 )
 
-func init() {
-	authConn, err := grpc.NewClient("localhost:10001",
+func initAuthConn() {
+	authConn, err := grpc.NewClient("localhost:9900",
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {

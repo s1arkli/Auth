@@ -13,16 +13,22 @@ import (
 	authpb "mono/pb"
 	"mono/service/auth/internal/interfaces"
 	"mono/service/auth/pkg/dbc"
+	"mono/service/auth/pkg/gen"
 )
 
+func init() {
+	rootCmd.AddCommand(authCmd)
+}
+
 var authCmd = &cobra.Command{
-	Use:   "jwt",
+	Use:   "rpc",
 	Short: "Auth application",
 	Run: func(cmd *cobra.Command, args []string) {
+		initial.Viper("service/auth/config.yaml")
+		gen.InitSnow()
+
 		dbc.InitPgsql()
 		db := dbc.GetAuthDB()
-
-		initial.Viper("application/jwt/config.yaml")
 
 		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", viper.GetString("port")))
 		if err != nil {

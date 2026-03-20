@@ -1,0 +1,71 @@
+basePath: /api/v1
+definitions:
+  auth.LoginRequest:
+    properties:
+      account:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.RegisterRequest:
+    properties:
+      account:
+        type: string
+      password:
+        type: string
+    type: object
+host: localhost:9999
+info:
+  contact: {}
+  description: 后端接口文档
+  title: s1ark api
+  version: "1.0"
+paths:
+  /account/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 注册请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - account
+  /account/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Cookie
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - account
+  /account/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 注册请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterRequest'
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - account
+swagger: "2.0"
