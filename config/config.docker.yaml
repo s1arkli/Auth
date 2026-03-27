@@ -13,3 +13,8 @@ service:
   user:
     grpc: user
     port: 9920
+minio:
+  endpoint: "minio:10000"       # docker 内部用服务名
+  access_key: "admin"
+  secret_key: "admin123456"
+  external_url: "http://localhost:10000"

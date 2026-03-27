@@ -13,8 +13,8 @@ var (
 	rpcClients = sync.Map{}
 )
 
-func RegisterGrpcClient(module, port string) {
-	rpc, err := grpc.NewClient(fmt.Sprintf("%s:%s", module, port),
+func RegisterGrpcClient(module, path, port string) {
+	rpc, err := grpc.NewClient(fmt.Sprintf("%s:%s", path, port),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {

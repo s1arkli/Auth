@@ -1,23 +1,8 @@
-import { useEffect, useSyncExternalStore } from 'react'
+import { useEffect } from 'react'
+import { appEnv } from '../config/env'
 
 export type LogLevel = 'info' | 'success' | 'warn' | 'error'
 export type LogCategory = 'request' | 'auth' | 'post' | 'ui' | 'system'
-
-export interface LogEntry {
-  id: string
-  timestamp: string
-  level: LogLevel
-  category: LogCategory
-  action: string
-  message: string
-  context?: unknown
-  status?: number
-  durationMs?: number
-}
-
-interface LoggerState {
-  entries: LogEntry[]
-}
 
 interface LogPayload {
   level: LogLevel
@@ -29,25 +14,7 @@ interface LogPayload {
   durationMs?: number
 }
 
-const STORAGE_KEY = 'mono_frontend_logs'
-const PANEL_KEY = 'mono_frontend_logs_panel_open'
-const PANEL_SIZE_KEY = 'mono_frontend_logs_panel_size'
-const MAX_ENTRIES = 250
-const listeners = new Set<() => void>()
 const sensitiveKeyPattern = /(password|token|authorization|cookie|secret|credential)/i
-
-let state: LoggerState = { entries: [] }
-
-function isBrowser() {
-  return typeof window !== 'undefined'
-}
-
-function createId() {
-  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
-    return crypto.randomUUID()
-  }
-  return `${Date.now()}-${Math.random().toString(16).slice(2)}`
-}
 
 function maskSecret(value: string) {
   if (value.length <= 8) {
@@ -100,154 +67,40 @@ function sanitizeValue(value: unknown, depth = 0): unknown {
   return output
 }
 
-function persist() {
-  if (!isBrowser()) {
-    return
+function getConsoleMethod(level: LogLevel) {
+  if (level === 'error') {
+    return console.error
   }
-
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.entries))
-  } catch {
-    // ignore quota errors
+  if (level === 'warn') {
+    return console.warn
   }
+  return console.info
 }
-
-function emit() {
-  persist()
-  for (const listener of listeners) {
-    listener()
-  }
-}
-
-function loadState() {
-  if (!isBrowser()) {
-    return
-  }
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) {
-      return
-    }
-
-    const entries = JSON.parse(raw) as LogEntry[]
-    if (Array.isArray(entries)) {
-      state = {
-        entries: entries.slice(-MAX_ENTRIES),
-      }
-    }
-  } catch {
-    state = { entries: [] }
-  }
-}
-
-loadState()
 
 export const appLogger = {
   log(payload: LogPayload) {
-    const entry: LogEntry = {
-      id: createId(),
-      timestamp: new Date().toISOString(),
-      level: payload.level,
-      category: payload.category,
-      action: payload.action,
-      message: payload.message,
-      context: sanitizeValue(payload.context),
-    }
-    if (payload.status != null) {
-      entry.status = payload.status
-    }
-    if (payload.durationMs != null) {
-      entry.durationMs = Math.round(payload.durationMs)
-    }
+    const method = getConsoleMethod(payload.level)
+    const title = [
+      `[mono/${payload.category}]`,
+      payload.action,
+      payload.message,
+      payload.status != null ? `status=${payload.status}` : '',
+      payload.durationMs != null ? `${Math.round(payload.durationMs)}ms` : '',
+    ]
+      .filter(Boolean)
+      .join(' ')
 
-    state = {
-      entries: [...state.entries, entry].slice(-MAX_ENTRIES),
-    }
-    emit()
-    return entry
-  },
-  clear() {
-    state = { entries: [] }
-    emit()
-  },
-  getState() {
-    return state
-  },
-  subscribe(listener: () => void) {
-    listeners.add(listener)
-    return () => listeners.delete(listener)
-  },
-  exportText() {
-    return state.entries
-      .map((entry) => {
-        const summary = [
-          `[${entry.timestamp}]`,
-          entry.level.toUpperCase(),
-          entry.category,
-          entry.action,
-          entry.message,
-          entry.status ? `status=${entry.status}` : '',
-          entry.durationMs ? `duration=${entry.durationMs}ms` : '',
-        ]
-          .filter(Boolean)
-          .join(' | ')
+    const context = appEnv.dev ? payload.context : sanitizeValue(payload.context)
 
-        if (!entry.context) {
-          return summary
-        }
-
-        return `${summary}\n${JSON.stringify(entry.context, null, 2)}`
-      })
-      .join('\n\n')
-  },
-  getPanelOpen() {
-    if (!isBrowser()) {
-      return false
-    }
-    return window.localStorage.getItem(PANEL_KEY) === '1'
-  },
-  setPanelOpen(open: boolean) {
-    if (!isBrowser()) {
-      return
-    }
-    window.localStorage.setItem(PANEL_KEY, open ? '1' : '0')
-  },
-  getPanelSize() {
-    if (!isBrowser()) {
-      return null
-    }
-
-    try {
-      const raw = window.localStorage.getItem(PANEL_SIZE_KEY)
-      if (!raw) {
-        return null
-      }
-
-      const parsed = JSON.parse(raw) as { width?: number; height?: number }
-      if (!parsed.width || !parsed.height) {
-        return null
-      }
-
-      return {
-        width: parsed.width,
-        height: parsed.height,
-      }
-    } catch {
-      return null
-    }
-  },
-  setPanelSize(size: { width: number; height: number }) {
-    if (!isBrowser()) {
+    if (context === undefined) {
+      method(title)
       return
     }
 
-    window.localStorage.setItem(PANEL_SIZE_KEY, JSON.stringify(size))
+    console.groupCollapsed(title)
+    method('context:', context)
+    console.groupEnd()
   },
-}
-
-export function useLogStore() {
-  return useSyncExternalStore(appLogger.subscribe, appLogger.getState, appLogger.getState)
 }
 
 export function useBrowserLogBridge() {

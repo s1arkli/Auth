@@ -3,6 +3,7 @@ package interfaces
 import (
 	"context"
 
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 
@@ -28,7 +29,7 @@ func (p *Post) List(ctx context.Context, req *pb.PostListReq) (*pb.PostListResp,
 
 	data, total, err := infra.List(p.db, ctx, req)
 	if err != nil {
-		return errRes, err
+		return errRes, status.Error(1, err.Error())
 	}
 	if len(data) == 0 {
 		return errRes, nil
@@ -42,13 +43,13 @@ func (p *Post) List(ctx context.Context, req *pb.PostListReq) (*pb.PostListResp,
 }
 
 func (p *Post) Create(ctx context.Context, req *pb.PostCreateReq) (*emptypb.Empty, error) {
-	return &emptypb.Empty{}, infra.Create(p.db, ctx, req)
+	return &emptypb.Empty{}, status.Error(1, infra.Create(p.db, ctx, req).Error())
 }
 
 func (p *Post) Detail(ctx context.Context, req *pb.PostDetailReq) (*pb.PostDetailResp, error) {
 	data, err := infra.Detail(p.db, ctx, req)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(1, err.Error())
 	}
 	res := &pb.PostDetailResp{
 		Title:        data.Title,

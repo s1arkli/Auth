@@ -26,6 +26,8 @@ type RegisterReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Account       string                 `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
 	Password      string                 `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
+	Nickname      string                 `protobuf:"bytes,10,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Avatar        string                 `protobuf:"bytes,11,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -70,6 +72,20 @@ func (x *RegisterReq) GetAccount() string {
 func (x *RegisterReq) GetPassword() string {
 	if x != nil {
 		return x.Password
+	}
+	return ""
+}
+
+func (x *RegisterReq) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
+func (x *RegisterReq) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
 	}
 	return ""
 }
@@ -130,6 +146,9 @@ type LoginResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
 	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	Uid           int64                  `protobuf:"varint,10,opt,name=uid,proto3" json:"uid,omitempty"`
+	Avatar        string                 `protobuf:"bytes,11,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	Nickname      string                 `protobuf:"bytes,12,opt,name=nickname,proto3" json:"nickname,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -174,6 +193,27 @@ func (x *LoginResp) GetAccessToken() string {
 func (x *LoginResp) GetRefreshToken() string {
 	if x != nil {
 		return x.RefreshToken
+	}
+	return ""
+}
+
+func (x *LoginResp) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
+func (x *LoginResp) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
+func (x *LoginResp) GetNickname() string {
+	if x != nil {
+		return x.Nickname
 	}
 	return ""
 }
@@ -279,16 +319,23 @@ var File_auth_proto protoreflect.FileDescriptor
 const file_auth_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"auth.proto\x12\x0fgrpc.proto.auth\x1a\x1bgoogle/protobuf/empty.proto\"C\n" +
+	"auth.proto\x12\x0fgrpc.proto.auth\x1a\x1bgoogle/protobuf/empty.proto\"w\n" +
 	"\vRegisterReq\x12\x18\n" +
 	"\aaccount\x18\x01 \x01(\tR\aaccount\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"@\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\x12\x1a\n" +
+	"\bnickname\x18\n" +
+	" \x01(\tR\bnickname\x12\x16\n" +
+	"\x06avatar\x18\v \x01(\tR\x06avatar\"@\n" +
 	"\bLoginReq\x12\x18\n" +
 	"\aaccount\x18\x01 \x01(\tR\aaccount\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"S\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"\x99\x01\n" +
 	"\tLoginResp\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
-	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"1\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12\x10\n" +
+	"\x03uid\x18\n" +
+	" \x01(\x03R\x03uid\x12\x16\n" +
+	"\x06avatar\x18\v \x01(\tR\x06avatar\x12\x1a\n" +
+	"\bnickname\x18\f \x01(\tR\bnickname\"1\n" +
 	"\n" +
 	"RefreshReq\x12#\n" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"U\n" +

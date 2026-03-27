@@ -9,6 +9,7 @@ package pb
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -213,12 +214,132 @@ func (x *BatchGetUserResp) GetUsers() map[int64]*GetUserResp {
 	return nil
 }
 
+type UpdateUserReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Uid           int64                  `protobuf:"varint,1,opt,name=uid,proto3" json:"uid,omitempty"`
+	Nickname      string                 `protobuf:"bytes,10,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Avatar        string                 `protobuf:"bytes,11,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateUserReq) Reset() {
+	*x = UpdateUserReq{}
+	mi := &file_user_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateUserReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateUserReq) ProtoMessage() {}
+
+func (x *UpdateUserReq) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateUserReq.ProtoReflect.Descriptor instead.
+func (*UpdateUserReq) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *UpdateUserReq) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
+func (x *UpdateUserReq) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
+func (x *UpdateUserReq) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
+type CreateUserReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Uid           int64                  `protobuf:"varint,1,opt,name=uid,proto3" json:"uid,omitempty"`
+	Nickname      string                 `protobuf:"bytes,10,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	Avatar        string                 `protobuf:"bytes,11,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateUserReq) Reset() {
+	*x = CreateUserReq{}
+	mi := &file_user_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateUserReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateUserReq) ProtoMessage() {}
+
+func (x *CreateUserReq) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateUserReq.ProtoReflect.Descriptor instead.
+func (*CreateUserReq) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CreateUserReq) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
+func (x *CreateUserReq) GetNickname() string {
+	if x != nil {
+		return x.Nickname
+	}
+	return ""
+}
+
+func (x *CreateUserReq) GetAvatar() string {
+	if x != nil {
+		return x.Avatar
+	}
+	return ""
+}
+
 var File_user_proto protoreflect.FileDescriptor
 
 const file_user_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"user.proto\x12\x0erpc.proto.user\"\x1e\n" +
+	"user.proto\x12\x0erpc.proto.user\x1a\x1bgoogle/protobuf/empty.proto\"\x1e\n" +
 	"\n" +
 	"GetUserReq\x12\x10\n" +
 	"\x03uid\x18\x01 \x01(\x03R\x03uid\"S\n" +
@@ -233,10 +354,24 @@ const file_user_proto_rawDesc = "" +
 	"\n" +
 	"UsersEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\x03R\x03key\x121\n" +
-	"\x05value\x18\x02 \x01(\v2\x1b.rpc.proto.user.GetUserRespR\x05value:\x028\x012\xa5\x01\n" +
+	"\x05value\x18\x02 \x01(\v2\x1b.rpc.proto.user.GetUserRespR\x05value:\x028\x01\"U\n" +
+	"\rUpdateUserReq\x12\x10\n" +
+	"\x03uid\x18\x01 \x01(\x03R\x03uid\x12\x1a\n" +
+	"\bnickname\x18\n" +
+	" \x01(\tR\bnickname\x12\x16\n" +
+	"\x06avatar\x18\v \x01(\tR\x06avatar\"U\n" +
+	"\rCreateUserReq\x12\x10\n" +
+	"\x03uid\x18\x01 \x01(\x03R\x03uid\x12\x1a\n" +
+	"\bnickname\x18\n" +
+	" \x01(\tR\bnickname\x12\x16\n" +
+	"\x06avatar\x18\v \x01(\tR\x06avatar2\xaf\x02\n" +
 	"\x04User\x12F\n" +
 	"\vGetUserInfo\x12\x1a.rpc.proto.user.GetUserReq\x1a\x1b.rpc.proto.user.GetUserResp\x12U\n" +
-	"\x10BatchGetUserInfo\x12\x1f.rpc.proto.user.BatchGetUserReq\x1a .rpc.proto.user.BatchGetUserRespB\tZ\amono/pbb\x06proto3"
+	"\x10BatchGetUserInfo\x12\x1f.rpc.proto.user.BatchGetUserReq\x1a .rpc.proto.user.BatchGetUserResp\x12C\n" +
+	"\n" +
+	"UpdateUser\x12\x1d.rpc.proto.user.UpdateUserReq\x1a\x16.google.protobuf.Empty\x12C\n" +
+	"\n" +
+	"CreateUser\x12\x1d.rpc.proto.user.CreateUserReq\x1a\x16.google.protobuf.EmptyB\tZ\amono/pbb\x06proto3"
 
 var (
 	file_user_proto_rawDescOnce sync.Once
@@ -250,23 +385,30 @@ func file_user_proto_rawDescGZIP() []byte {
 	return file_user_proto_rawDescData
 }
 
-var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_user_proto_goTypes = []any{
 	(*GetUserReq)(nil),       // 0: rpc.proto.user.GetUserReq
 	(*GetUserResp)(nil),      // 1: rpc.proto.user.GetUserResp
 	(*BatchGetUserReq)(nil),  // 2: rpc.proto.user.BatchGetUserReq
 	(*BatchGetUserResp)(nil), // 3: rpc.proto.user.BatchGetUserResp
-	nil,                      // 4: rpc.proto.user.BatchGetUserResp.UsersEntry
+	(*UpdateUserReq)(nil),    // 4: rpc.proto.user.UpdateUserReq
+	(*CreateUserReq)(nil),    // 5: rpc.proto.user.CreateUserReq
+	nil,                      // 6: rpc.proto.user.BatchGetUserResp.UsersEntry
+	(*emptypb.Empty)(nil),    // 7: google.protobuf.Empty
 }
 var file_user_proto_depIdxs = []int32{
-	4, // 0: rpc.proto.user.BatchGetUserResp.users:type_name -> rpc.proto.user.BatchGetUserResp.UsersEntry
+	6, // 0: rpc.proto.user.BatchGetUserResp.users:type_name -> rpc.proto.user.BatchGetUserResp.UsersEntry
 	1, // 1: rpc.proto.user.BatchGetUserResp.UsersEntry.value:type_name -> rpc.proto.user.GetUserResp
 	0, // 2: rpc.proto.user.User.GetUserInfo:input_type -> rpc.proto.user.GetUserReq
 	2, // 3: rpc.proto.user.User.BatchGetUserInfo:input_type -> rpc.proto.user.BatchGetUserReq
-	1, // 4: rpc.proto.user.User.GetUserInfo:output_type -> rpc.proto.user.GetUserResp
-	3, // 5: rpc.proto.user.User.BatchGetUserInfo:output_type -> rpc.proto.user.BatchGetUserResp
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
+	4, // 4: rpc.proto.user.User.UpdateUser:input_type -> rpc.proto.user.UpdateUserReq
+	5, // 5: rpc.proto.user.User.CreateUser:input_type -> rpc.proto.user.CreateUserReq
+	1, // 6: rpc.proto.user.User.GetUserInfo:output_type -> rpc.proto.user.GetUserResp
+	3, // 7: rpc.proto.user.User.BatchGetUserInfo:output_type -> rpc.proto.user.BatchGetUserResp
+	7, // 8: rpc.proto.user.User.UpdateUser:output_type -> google.protobuf.Empty
+	7, // 9: rpc.proto.user.User.CreateUser:output_type -> google.protobuf.Empty
+	6, // [6:10] is the sub-list for method output_type
+	2, // [2:6] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name
 	2, // [2:2] is the sub-list for extension extendee
 	0, // [0:2] is the sub-list for field type_name
@@ -283,7 +425,7 @@ func file_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

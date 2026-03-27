@@ -3,6 +3,7 @@ package auth
 import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 
 	authpb "mono/pb"
 
@@ -29,7 +30,7 @@ func NewService(conn *grpc.ClientConn) *Service {
 // @Accept       json
 // @Produce      json
 // @Param        request  body  RegisterRequest  true  "注册请求"
-// @Router       /account/register [post]
+// @Router       /api/v1/account/register [post]
 func (s *Service) Register(c *gin.Context) {
 	req := new(RegisterRequest)
 
@@ -43,7 +44,8 @@ func (s *Service) Register(c *gin.Context) {
 		Password: req.Password,
 	})
 	if err != nil {
-		response.Fail(c, ecode.New(1, err.Error()))
+		st, _ := status.FromError(err)
+		response.Fail(c, ecode.New(1, st.Message()))
 		return
 	}
 	response.Success(c, "ok")
@@ -56,7 +58,7 @@ func (s *Service) Register(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body  LoginRequest  true  "注册请求"
-// @Router       /account/login [post]
+// @Router       /api/v1/account/login [post]
 func (s *Service) Login(c *gin.Context) {
 	req := new(LoginRequest)
 
@@ -70,12 +72,18 @@ func (s *Service) Login(c *gin.Context) {
 		Password: req.Password,
 	})
 	if err != nil {
-		response.Fail(c, ecode.New(1, err.Error()))
+		st, _ := status.FromError(err)
+		response.Fail(c, ecode.New(1, st.Message()))
 		return
 	}
 
 	c.SetCookie("refresh_token", resp.RefreshToken, 7*24*3600, "/api/v1/account/refresh", "", true, true)
-	response.Success(c, resp.AccessToken)
+	response.Success(c, LoginResp{
+		AccessToken: resp.AccessToken,
+		Uid:         resp.Uid,
+		Nickname:    resp.Nickname,
+		Avatar:      resp.Avatar,
+	})
 }
 
 // Refresh 刷新token
@@ -85,7 +93,7 @@ func (s *Service) Login(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        Cookie  header  string  true  "Bearer token"
-// @Router       /account/refresh [post]
+// @Router       /api/v1/account/refresh [post]
 func (s *Service) Refresh(c *gin.Context) {
 	rToken, err := c.Cookie("refresh_token")
 	if err != nil {
@@ -98,7 +106,8 @@ func (s *Service) Refresh(c *gin.Context) {
 	})
 	if err != nil {
 		c.SetCookie("refresh_token", "", -1, "/api/v1/account/refresh", "", true, true)
-		response.Fail(c, ecode.New(1, err.Error()))
+		st, _ := status.FromError(err)
+		response.Fail(c, ecode.New(1, st.Message()))
 		return
 	}
 

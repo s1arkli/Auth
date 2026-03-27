@@ -3,11 +3,12 @@ package post
 import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 
 	"mono/gateway/ecode"
 	"mono/gateway/response"
+	"mono/gateway/service"
 	"mono/pb"
-	"mono/pkg/token"
 )
 
 type Service struct {
@@ -29,7 +30,7 @@ func NewService(conn *grpc.ClientConn) *Service {
 // @Accept       json
 // @Produce      json
 // @Param        request  body  ListReq  true  "列表请求"
-// @Router       /post/list [post]
+// @Router       /api/v1/post/list [post]
 func (s *Service) List(c *gin.Context) {
 	req := new(ListReq)
 	if err := c.ShouldBind(req); err != nil {
@@ -44,7 +45,8 @@ func (s *Service) List(c *gin.Context) {
 		Sort:     pb.SortType(req.Sort),
 	})
 	if err != nil {
-		response.Fail(c, ecode.New(1, err.Error()))
+		st, _ := status.FromError(err)
+		response.Fail(c, ecode.New(1, st.Message()))
 		return
 	}
 	response.Success(c, resp)
@@ -58,7 +60,7 @@ func (s *Service) List(c *gin.Context) {
 // @Produce      json
 // @Security     BearerAuth
 // @Param        request  body  CreateReq  true  "创建请求"
-// @Router       /post/create [post]
+// @Router       /api/v1/post/create [post]
 func (s *Service) Create(c *gin.Context) {
 	req := new(CreateReq)
 	if err := c.ShouldBind(req); err != nil {
@@ -67,13 +69,14 @@ func (s *Service) Create(c *gin.Context) {
 	}
 
 	resp, err := s.post.Create(c, &pb.PostCreateReq{
-		Uid:      token.GetUserID(c),
+		Uid:      service.GetUserID(c),
 		Title:    req.Title,
 		Content:  req.Content,
 		PostType: req.PostType,
 	})
 	if err != nil {
-		response.Fail(c, ecode.New(1, err.Error()))
+		st, _ := status.FromError(err)
+		response.Fail(c, ecode.New(1, st.Message()))
 		return
 	}
 	response.Success(c, resp)
@@ -86,7 +89,7 @@ func (s *Service) Create(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        request  body  DetailReq  true  "详情请求"
-// @Router       /post/detail [post]
+// @Router       /api/v1/post/detail [post]
 func (s *Service) Detail(c *gin.Context) {
 	req := new(DetailReq)
 	if err := c.ShouldBind(req); err != nil {
@@ -98,7 +101,8 @@ func (s *Service) Detail(c *gin.Context) {
 		PostId: req.PostId,
 	})
 	if err != nil {
-		response.Fail(c, ecode.New(1, err.Error()))
+		st, _ := status.FromError(err)
+		response.Fail(c, ecode.New(1, st.Message()))
 		return
 	}
 	response.Success(c, resp)

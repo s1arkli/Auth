@@ -11,6 +11,7 @@ import (
 
 	authpb "mono/pb"
 	"mono/pkg/initial"
+	"mono/service/auth/internal/client"
 	"mono/service/auth/internal/interfaces"
 	"mono/service/auth/pkg"
 	"mono/service/auth/pkg/gen"
@@ -30,6 +31,7 @@ var authCmd = &cobra.Command{
 
 		db := initial.GetDB()
 		defer initial.CloseDB()
+		user := client.InitUserClient()
 
 		port := viper.GetString("service.auth.port")
 		lis, err := net.Listen("tcp", fmt.Sprintf(":%s", port))
@@ -41,7 +43,8 @@ var authCmd = &cobra.Command{
 
 		// 这一步是必须的：把你的实现注册到 gRPC Server
 		authpb.RegisterAuthServiceServer(s, &interfaces.Auth{
-			DB: db,
+			DB:   db,
+			User: user,
 		})
 
 		log.Printf("grpc server listening on :%s", port)

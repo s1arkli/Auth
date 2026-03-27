@@ -1,4 +1,4 @@
-package token
+package service
 
 import "github.com/gin-gonic/gin"
 

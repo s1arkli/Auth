@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/account/login": {
+        "/api/v1/account/login": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -40,7 +40,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/account/refresh": {
+        "/api/v1/account/refresh": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -63,7 +63,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/account/register": {
+        "/api/v1/account/register": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -88,7 +88,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/post/create": {
+        "/api/v1/post/create": {
             "post": {
                 "security": [
                     {
@@ -118,7 +118,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/post/detail": {
+        "/api/v1/post/detail": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -143,7 +143,7 @@ const docTemplate = `{
                 "responses": {}
             }
         },
-        "/post/list": {
+        "/api/v1/post/list": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -162,6 +162,56 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/post.ListReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/user/batch": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "parameters": [
+                    {
+                        "description": "批量获取用户信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.BatchGetUserInfoReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/user/update": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "parameters": [
+                    {
+                        "description": "修改用户信息",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UpdateUserReq"
                         }
                     }
                 ],
@@ -281,6 +331,39 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "user.BatchGetUserInfoReq": {
+            "type": "object",
+            "required": [
+                "uids"
+            ],
+            "properties": {
+                "uids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "user.UpdateUserReq": {
+            "type": "object",
+            "required": [
+                "uid"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 1
+                },
+                "uid": {
+                    "type": "integer"
                 }
             }
         }

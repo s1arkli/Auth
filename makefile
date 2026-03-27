@@ -25,3 +25,9 @@ stop:
 
 clean:
 	docker-compose down -v
+
+dev: proto doc
+	go run ./gateway main.go api
+	go run ./service/auth main.go rpc
+	go run ./service/post main.go rpc
+	go run ./service/user main.go rpc

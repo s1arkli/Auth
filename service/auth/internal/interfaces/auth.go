@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 
@@ -19,14 +20,15 @@ import (
 
 type Auth struct {
 	authpb.UnimplementedAuthServiceServer
-	DB *gorm.DB
+	DB   *gorm.DB
+	User authpb.UserClient
 }
 
 func (a *Auth) Register(ctx context.Context, req *authpb.RegisterReq) (*emptypb.Empty, error) {
 
 	is, _ := a.isExist(ctx, req.Account)
 	if is {
-		return &emptypb.Empty{}, errors.New("account exists")
+		return &emptypb.Empty{}, status.Error(1, "account exists")
 	}
 
 	if err := a.create(ctx, req); err != nil {
@@ -67,18 +69,28 @@ func (a *Auth) create(ctx context.Context, req *authpb.RegisterReq) error {
 func (a *Auth) Login(ctx context.Context, loginReq *authpb.LoginReq) (*authpb.LoginResp, error) {
 	is, data := a.isExist(ctx, loginReq.Account)
 	if !is {
-		return nil, errors.New("account does not exist")
+		return nil, status.Error(1, "account does not exist")
 	}
 
 	if !a.isRightPwd(data.Password, loginReq.Password) {
-		return nil, errors.New("password error")
+		return nil, status.Error(2, "password error")
 	}
 
 	rToken, err := jwt.GenerateToken(data.UID, 7*time.Hour*24, jwt.RefreshToken)
 	aToken, err := jwt.GenerateToken(data.UID, 15*time.Minute, jwt.AccessToken)
+
+	userInfo, err := a.User.GetUserInfo(ctx, &authpb.GetUserReq{
+		Uid: data.UID,
+	})
+	if err != nil {
+		return nil, status.Error(3, "err uid")
+	}
 	return &authpb.LoginResp{
 		AccessToken:  aToken,
 		RefreshToken: rToken,
+		Uid:          data.UID,
+		Nickname:     userInfo.Nickname,
+		Avatar:       userInfo.Avatar,
 	}, err
 }
 
@@ -94,18 +106,21 @@ func (a *Auth) isRightPwd(pwd, pwdReq string) bool {
 func (a *Auth) Refresh(ctx context.Context, req *authpb.RefreshReq) (*authpb.RefreshResp, error) {
 	claim, err := jwt.ParseToken(req.RefreshToken)
 	if err != nil || claim == nil {
-		return &authpb.RefreshResp{}, err
+		return &authpb.RefreshResp{}, status.Error(1, "err refresh token")
 	}
 
 	if claim.TokenType != jwt.RefreshToken {
-		return &authpb.RefreshResp{}, errors.New("token is invalid")
+		return &authpb.RefreshResp{}, status.Error(2, "token is invalid")
 	}
 
 	rToken, err := jwt.GenerateToken(claim.Uid, 7*time.Hour*24, jwt.RefreshToken)
 	aToken, err := jwt.GenerateToken(claim.Uid, 15*time.Minute, jwt.AccessToken)
 
+	if err != nil {
+		return &authpb.RefreshResp{}, status.Error(3, "generate token err")
+	}
 	return &authpb.RefreshResp{
 		AccessToken:  aToken,
 		RefreshToken: rToken,
-	}, err
+	}, nil
 }

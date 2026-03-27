@@ -84,6 +84,28 @@ definitions:
     - page
     - pageSize
     type: object
+  user.BatchGetUserInfoReq:
+    properties:
+      uids:
+        items:
+          type: integer
+        type: array
+    required:
+    - uids
+    type: object
+  user.UpdateUserReq:
+    properties:
+      avatar:
+        type: string
+      nickname:
+        maxLength: 16
+        minLength: 1
+        type: string
+      uid:
+        type: integer
+    required:
+    - uid
+    type: object
 host: localhost:9999
 info:
   contact: {}
@@ -91,7 +113,7 @@ info:
   title: s1ark api
   version: "1.0"
 paths:
-  /account/login:
+  /api/v1/account/login:
     post:
       consumes:
       - application/json
@@ -107,7 +129,7 @@ paths:
       responses: {}
       tags:
       - account
-  /account/refresh:
+  /api/v1/account/refresh:
     post:
       consumes:
       - application/json
@@ -122,7 +144,7 @@ paths:
       responses: {}
       tags:
       - account
-  /account/register:
+  /api/v1/account/register:
     post:
       consumes:
       - application/json
@@ -138,7 +160,7 @@ paths:
       responses: {}
       tags:
       - account
-  /post/create:
+  /api/v1/post/create:
     post:
       consumes:
       - application/json
@@ -156,7 +178,7 @@ paths:
       - BearerAuth: []
       tags:
       - post
-  /post/detail:
+  /api/v1/post/detail:
     post:
       consumes:
       - application/json
@@ -172,7 +194,7 @@ paths:
       responses: {}
       tags:
       - post
-  /post/list:
+  /api/v1/post/list:
     post:
       consumes:
       - application/json
@@ -188,6 +210,38 @@ paths:
       responses: {}
       tags:
       - post
+  /api/v1/user/batch:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 批量获取用户信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.BatchGetUserInfoReq'
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - user
+  /api/v1/user/update:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 修改用户信息
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserReq'
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - user
 securityDefinitions:
   BearerAuth:
     description: 请输入 Bearer access_token

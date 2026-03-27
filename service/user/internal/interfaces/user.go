@@ -3,10 +3,13 @@ package interfaces
 import (
 	"context"
 
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"gorm.io/gorm"
 
 	"mono/pb"
 	"mono/service/user/internal/infra"
+	"mono/service/user/internal/infra/model"
 	"mono/service/user/pkg"
 )
 
@@ -24,7 +27,7 @@ func NewUser(db *gorm.DB) *User {
 func (u *User) GetUserInfo(ctx context.Context, req *pb.GetUserReq) (*pb.GetUserResp, error) {
 	data, err := infra.GetUserInfo(u.DB, ctx, req.Uid)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(1, err.Error())
 	}
 	if data == nil {
 		return &pb.GetUserResp{}, nil
@@ -44,7 +47,7 @@ func (u *User) BatchGetUserInfo(ctx context.Context, req *pb.BatchGetUserReq) (*
 
 	data, err := infra.BatchGetUserInfo(u.DB, ctx, req.Uids)
 	if err != nil {
-		return nil, err
+		return nil, status.Error(1, err.Error())
 	}
 	if data == nil {
 		return &pb.BatchGetUserResp{}, nil
@@ -61,4 +64,35 @@ func (u *User) BatchGetUserInfo(ctx context.Context, req *pb.BatchGetUserReq) (*
 	return &pb.BatchGetUserResp{
 		Users: res,
 	}, nil
+}
+
+func (u *User) UpdateUser(ctx context.Context, req *pb.UpdateUserReq) (*emptypb.Empty, error) {
+	err := infra.UpdateUser(u.DB, ctx, &model.User{
+		UID:      req.Uid,
+		Nickname: req.Nickname,
+		Avatar:   req.Avatar,
+	})
+	if err != nil {
+		return &emptypb.Empty{}, status.Error(1, err.Error())
+	}
+	return &emptypb.Empty{}, nil
+}
+
+func (u *User) CreateUser(ctx context.Context, req *pb.CreateUserReq) (*emptypb.Empty, error) {
+	data, err := infra.GetUserInfo(u.DB, ctx, req.Uid)
+	if err != nil {
+		return &emptypb.Empty{}, status.Error(1, err.Error())
+	}
+	if data != nil {
+		return &emptypb.Empty{}, status.Error(2, "user already exists")
+	}
+
+	if err = infra.CreateUser(u.DB, ctx, &model.User{
+		UID:      req.Uid,
+		Nickname: req.Nickname,
+		Avatar:   req.Avatar,
+	}); err != nil {
+		return &emptypb.Empty{}, status.Error(1, err.Error())
+	}
+	return &emptypb.Empty{}, nil
 }

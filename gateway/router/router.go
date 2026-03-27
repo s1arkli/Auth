@@ -9,9 +9,12 @@ import (
 	"mono/gateway/grpc"
 	"mono/gateway/service/auth"
 	"mono/gateway/service/post"
+	"mono/gateway/service/resource"
+	"mono/gateway/service/user"
 	"mono/pkg/middleware"
 	authPkg "mono/service/auth/pkg"
 	postPkg "mono/service/post/pkg"
+	userPkg "mono/service/user/pkg"
 )
 
 func Api(r *gin.Engine) {
@@ -43,7 +46,28 @@ func Api(r *gin.Engine) {
 
 		p := v1.Group("/post")
 		p.POST("/list", service.List)
-		p.POST("/create", service.Create).Use(middleware.Auth())
 		p.POST("/detail", service.Detail)
+		p.POST("/create", service.Create).Use(middleware.Auth())
+	}
+
+	{
+		//用户
+		conn, err := grpc.GetConn(userPkg.Module)
+		if err != nil {
+			panic(err)
+		}
+		service := user.NewService(conn)
+
+		p := v1.Group("/user")
+		p.POST("/batch", service.BatchGetUsersInfo)
+		p.POST("/update", service.Update)
+	}
+
+	{
+		//资源上传
+		service := resource.NewService()
+
+		ui := v1.Group("/resource")
+		ui.POST("/upload/avatar", service.Avatar)
 	}
 }

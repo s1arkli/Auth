@@ -13,3 +13,8 @@ service:
   user:
     grpc: localhost
     port: 9920
+minio:
+  endpoint: "localhost:10100"
+  access_key: "admin"
+  secret_key: "admin123456"
+  external_url: "http://localhost:10100"
