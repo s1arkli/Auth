@@ -77,6 +77,7 @@ type PostListReq struct {
 	PageSize      int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	PostType      int32                  `protobuf:"varint,10,opt,name=post_type,json=postType,proto3" json:"post_type,omitempty"`
 	Sort          SortType               `protobuf:"varint,11,opt,name=sort,proto3,enum=rpc.proto.post.SortType" json:"sort,omitempty"`
+	Uid           int64                  `protobuf:"varint,20,opt,name=uid,proto3" json:"uid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -137,6 +138,13 @@ func (x *PostListReq) GetSort() SortType {
 		return x.Sort
 	}
 	return SortType_SORT_TYPE_DEFAULT
+}
+
+func (x *PostListReq) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
 }
 
 type PostListResp struct {
@@ -203,6 +211,7 @@ type PostListItem struct {
 	CollectCount  int32                  `protobuf:"varint,21,opt,name=collect_count,json=collectCount,proto3" json:"collect_count,omitempty"`
 	CommentCount  int32                  `protobuf:"varint,22,opt,name=comment_count,json=commentCount,proto3" json:"comment_count,omitempty"`
 	ViewCount     int32                  `protobuf:"varint,23,opt,name=view_count,json=viewCount,proto3" json:"view_count,omitempty"`
+	IsLiked       bool                   `protobuf:"varint,24,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
 	IsTopped      bool                   `protobuf:"varint,30,opt,name=is_topped,json=isTopped,proto3" json:"is_topped,omitempty"`
 	CreatedAt     int64                  `protobuf:"varint,39,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -309,6 +318,13 @@ func (x *PostListItem) GetViewCount() int32 {
 	return 0
 }
 
+func (x *PostListItem) GetIsLiked() bool {
+	if x != nil {
+		return x.IsLiked
+	}
+	return false
+}
+
 func (x *PostListItem) GetIsTopped() bool {
 	if x != nil {
 		return x.IsTopped
@@ -394,6 +410,7 @@ func (x *PostCreateReq) GetPostType() int32 {
 type PostDetailReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PostId        int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	Uid           int64                  `protobuf:"varint,2,opt,name=uid,proto3" json:"uid,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -435,6 +452,13 @@ func (x *PostDetailReq) GetPostId() int64 {
 	return 0
 }
 
+func (x *PostDetailReq) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
 type PostDetailResp struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
@@ -445,6 +469,7 @@ type PostDetailResp struct {
 	LikeCount     int32                  `protobuf:"varint,10,opt,name=like_count,json=likeCount,proto3" json:"like_count,omitempty"`
 	CollectCount  int32                  `protobuf:"varint,11,opt,name=collect_count,json=collectCount,proto3" json:"collect_count,omitempty"`
 	ViewCount     int32                  `protobuf:"varint,13,opt,name=view_count,json=viewCount,proto3" json:"view_count,omitempty"`
+	IsLiked       bool                   `protobuf:"varint,14,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -535,21 +560,461 @@ func (x *PostDetailResp) GetViewCount() int32 {
 	return 0
 }
 
+func (x *PostDetailResp) GetIsLiked() bool {
+	if x != nil {
+		return x.IsLiked
+	}
+	return false
+}
+
+type PostCommentReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PostId        int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	Cursor        int64                  `protobuf:"varint,2,opt,name=cursor,proto3" json:"cursor,omitempty"`
+	PageSize      int32                  `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	Uid           int64                  `protobuf:"varint,4,opt,name=uid,proto3" json:"uid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PostCommentReq) Reset() {
+	*x = PostCommentReq{}
+	mi := &file_post_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PostCommentReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostCommentReq) ProtoMessage() {}
+
+func (x *PostCommentReq) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostCommentReq.ProtoReflect.Descriptor instead.
+func (*PostCommentReq) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *PostCommentReq) GetPostId() int64 {
+	if x != nil {
+		return x.PostId
+	}
+	return 0
+}
+
+func (x *PostCommentReq) GetCursor() int64 {
+	if x != nil {
+		return x.Cursor
+	}
+	return 0
+}
+
+func (x *PostCommentReq) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *PostCommentReq) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
+type PostCommentResp struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ParentComment []*ParentComment       `protobuf:"bytes,1,rep,name=parent_comment,json=parentComment,proto3" json:"parent_comment,omitempty"`
+	HasMore       bool                   `protobuf:"varint,2,opt,name=has_more,json=hasMore,proto3" json:"has_more,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PostCommentResp) Reset() {
+	*x = PostCommentResp{}
+	mi := &file_post_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PostCommentResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostCommentResp) ProtoMessage() {}
+
+func (x *PostCommentResp) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostCommentResp.ProtoReflect.Descriptor instead.
+func (*PostCommentResp) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *PostCommentResp) GetParentComment() []*ParentComment {
+	if x != nil {
+		return x.ParentComment
+	}
+	return nil
+}
+
+func (x *PostCommentResp) GetHasMore() bool {
+	if x != nil {
+		return x.HasMore
+	}
+	return false
+}
+
+type ParentComment struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	CommentId       int64                  `protobuf:"varint,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
+	Uid             int64                  `protobuf:"varint,2,opt,name=uid,proto3" json:"uid,omitempty"`
+	Content         string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
+	ChildrenComment []*ChildrenComment     `protobuf:"bytes,4,rep,name=children_comment,json=childrenComment,proto3" json:"children_comment,omitempty"`
+	ReplyCount      int64                  `protobuf:"varint,5,opt,name=reply_count,json=replyCount,proto3" json:"reply_count,omitempty"`
+	CreatedAt       int64                  `protobuf:"varint,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	IsLiked         bool                   `protobuf:"varint,10,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ParentComment) Reset() {
+	*x = ParentComment{}
+	mi := &file_post_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParentComment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParentComment) ProtoMessage() {}
+
+func (x *ParentComment) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParentComment.ProtoReflect.Descriptor instead.
+func (*ParentComment) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ParentComment) GetCommentId() int64 {
+	if x != nil {
+		return x.CommentId
+	}
+	return 0
+}
+
+func (x *ParentComment) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
+func (x *ParentComment) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *ParentComment) GetChildrenComment() []*ChildrenComment {
+	if x != nil {
+		return x.ChildrenComment
+	}
+	return nil
+}
+
+func (x *ParentComment) GetReplyCount() int64 {
+	if x != nil {
+		return x.ReplyCount
+	}
+	return 0
+}
+
+func (x *ParentComment) GetCreatedAt() int64 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+func (x *ParentComment) GetIsLiked() bool {
+	if x != nil {
+		return x.IsLiked
+	}
+	return false
+}
+
+type ChildrenComment struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CommentId     int64                  `protobuf:"varint,1,opt,name=comment_id,json=commentId,proto3" json:"comment_id,omitempty"`
+	Uid           int64                  `protobuf:"varint,2,opt,name=uid,proto3" json:"uid,omitempty"`
+	ReplyUid      int64                  `protobuf:"varint,3,opt,name=reply_uid,json=replyUid,proto3" json:"reply_uid,omitempty"`
+	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
+	CreatedAt     int64                  `protobuf:"varint,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	IsLiked       bool                   `protobuf:"varint,10,opt,name=is_liked,json=isLiked,proto3" json:"is_liked,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ChildrenComment) Reset() {
+	*x = ChildrenComment{}
+	mi := &file_post_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChildrenComment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChildrenComment) ProtoMessage() {}
+
+func (x *ChildrenComment) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ChildrenComment.ProtoReflect.Descriptor instead.
+func (*ChildrenComment) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ChildrenComment) GetCommentId() int64 {
+	if x != nil {
+		return x.CommentId
+	}
+	return 0
+}
+
+func (x *ChildrenComment) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
+func (x *ChildrenComment) GetReplyUid() int64 {
+	if x != nil {
+		return x.ReplyUid
+	}
+	return 0
+}
+
+func (x *ChildrenComment) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *ChildrenComment) GetCreatedAt() int64 {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return 0
+}
+
+func (x *ChildrenComment) GetIsLiked() bool {
+	if x != nil {
+		return x.IsLiked
+	}
+	return false
+}
+
+type SetCommentReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PostId        int64                  `protobuf:"varint,1,opt,name=post_id,json=postId,proto3" json:"post_id,omitempty"`
+	Uid           int64                  `protobuf:"varint,2,opt,name=uid,proto3" json:"uid,omitempty"`
+	Content       string                 `protobuf:"bytes,3,opt,name=content,proto3" json:"content,omitempty"`
+	ParentId      int64                  `protobuf:"varint,4,opt,name=parent_id,json=parentId,proto3" json:"parent_id,omitempty"`
+	ReplyUid      int64                  `protobuf:"varint,5,opt,name=reply_uid,json=replyUid,proto3" json:"reply_uid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetCommentReq) Reset() {
+	*x = SetCommentReq{}
+	mi := &file_post_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetCommentReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetCommentReq) ProtoMessage() {}
+
+func (x *SetCommentReq) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetCommentReq.ProtoReflect.Descriptor instead.
+func (*SetCommentReq) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *SetCommentReq) GetPostId() int64 {
+	if x != nil {
+		return x.PostId
+	}
+	return 0
+}
+
+func (x *SetCommentReq) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
+func (x *SetCommentReq) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *SetCommentReq) GetParentId() int64 {
+	if x != nil {
+		return x.ParentId
+	}
+	return 0
+}
+
+func (x *SetCommentReq) GetReplyUid() int64 {
+	if x != nil {
+		return x.ReplyUid
+	}
+	return 0
+}
+
+type SetLikeReq struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TargetId      int64                  `protobuf:"varint,1,opt,name=target_id,json=targetId,proto3" json:"target_id,omitempty"`
+	TargetType    int32                  `protobuf:"varint,2,opt,name=target_type,json=targetType,proto3" json:"target_type,omitempty"`
+	Uid           int64                  `protobuf:"varint,10,opt,name=uid,proto3" json:"uid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetLikeReq) Reset() {
+	*x = SetLikeReq{}
+	mi := &file_post_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetLikeReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetLikeReq) ProtoMessage() {}
+
+func (x *SetLikeReq) ProtoReflect() protoreflect.Message {
+	mi := &file_post_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetLikeReq.ProtoReflect.Descriptor instead.
+func (*SetLikeReq) Descriptor() ([]byte, []int) {
+	return file_post_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *SetLikeReq) GetTargetId() int64 {
+	if x != nil {
+		return x.TargetId
+	}
+	return 0
+}
+
+func (x *SetLikeReq) GetTargetType() int32 {
+	if x != nil {
+		return x.TargetType
+	}
+	return 0
+}
+
+func (x *SetLikeReq) GetUid() int64 {
+	if x != nil {
+		return x.Uid
+	}
+	return 0
+}
+
 var File_post_proto protoreflect.FileDescriptor
 
 const file_post_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"post.proto\x12\x0erpc.proto.post\x1a\x1bgoogle/protobuf/empty.proto\"\x89\x01\n" +
+	"post.proto\x12\x0erpc.proto.post\x1a\x1bgoogle/protobuf/empty.proto\"\x9b\x01\n" +
 	"\vPostListReq\x12\x12\n" +
 	"\x04page\x18\x01 \x01(\x05R\x04page\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1b\n" +
 	"\tpost_type\x18\n" +
 	" \x01(\x05R\bpostType\x12,\n" +
-	"\x04sort\x18\v \x01(\x0e2\x18.rpc.proto.post.SortTypeR\x04sort\"X\n" +
+	"\x04sort\x18\v \x01(\x0e2\x18.rpc.proto.post.SortTypeR\x04sort\x12\x10\n" +
+	"\x03uid\x18\x14 \x01(\x03R\x03uid\"X\n" +
 	"\fPostListResp\x122\n" +
 	"\x05posts\x18\x01 \x03(\v2\x1c.rpc.proto.post.PostListItemR\x05posts\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x03R\x05total\"\xe1\x02\n" +
+	"\x05total\x18\x02 \x01(\x03R\x05total\"\xfc\x02\n" +
 	"\fPostListItem\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x18\n" +
 	"\asummary\x18\x02 \x01(\tR\asummary\x12\x17\n" +
@@ -563,7 +1028,8 @@ const file_post_proto_rawDesc = "" +
 	"\rcollect_count\x18\x15 \x01(\x05R\fcollectCount\x12#\n" +
 	"\rcomment_count\x18\x16 \x01(\x05R\fcommentCount\x12\x1d\n" +
 	"\n" +
-	"view_count\x18\x17 \x01(\x05R\tviewCount\x12\x1b\n" +
+	"view_count\x18\x17 \x01(\x05R\tviewCount\x12\x19\n" +
+	"\bis_liked\x18\x18 \x01(\bR\aisLiked\x12\x1b\n" +
 	"\tis_topped\x18\x1e \x01(\bR\bisTopped\x12\x1d\n" +
 	"\n" +
 	"created_at\x18' \x01(\x03R\tcreatedAt\"n\n" +
@@ -571,9 +1037,10 @@ const file_post_proto_rawDesc = "" +
 	"\x03uid\x18\x01 \x01(\x03R\x03uid\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x18\n" +
 	"\acontent\x18\x03 \x01(\tR\acontent\x12\x1b\n" +
-	"\tpost_type\x18\x04 \x01(\x05R\bpostType\"(\n" +
+	"\tpost_type\x18\x04 \x01(\x05R\bpostType\":\n" +
 	"\rPostDetailReq\x12\x17\n" +
-	"\apost_id\x18\x01 \x01(\x03R\x06postId\"\xe9\x01\n" +
+	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12\x10\n" +
+	"\x03uid\x18\x02 \x01(\x03R\x03uid\"\x84\x02\n" +
 	"\x0ePostDetailResp\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x18\n" +
 	"\acontent\x18\x02 \x01(\tR\acontent\x12\x10\n" +
@@ -585,15 +1052,63 @@ const file_post_proto_rawDesc = "" +
 	" \x01(\x05R\tlikeCount\x12#\n" +
 	"\rcollect_count\x18\v \x01(\x05R\fcollectCount\x12\x1d\n" +
 	"\n" +
-	"view_count\x18\r \x01(\x05R\tviewCount*G\n" +
+	"view_count\x18\r \x01(\x05R\tviewCount\x12\x19\n" +
+	"\bis_liked\x18\x0e \x01(\bR\aisLiked\"p\n" +
+	"\x0ePostCommentReq\x12\x17\n" +
+	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12\x16\n" +
+	"\x06cursor\x18\x02 \x01(\x03R\x06cursor\x12\x1b\n" +
+	"\tpage_size\x18\x03 \x01(\x05R\bpageSize\x12\x10\n" +
+	"\x03uid\x18\x04 \x01(\x03R\x03uid\"r\n" +
+	"\x0fPostCommentResp\x12D\n" +
+	"\x0eparent_comment\x18\x01 \x03(\v2\x1d.rpc.proto.post.ParentCommentR\rparentComment\x12\x19\n" +
+	"\bhas_more\x18\x02 \x01(\bR\ahasMore\"\x81\x02\n" +
+	"\rParentComment\x12\x1d\n" +
+	"\n" +
+	"comment_id\x18\x01 \x01(\x03R\tcommentId\x12\x10\n" +
+	"\x03uid\x18\x02 \x01(\x03R\x03uid\x12\x18\n" +
+	"\acontent\x18\x03 \x01(\tR\acontent\x12J\n" +
+	"\x10children_comment\x18\x04 \x03(\v2\x1f.rpc.proto.post.ChildrenCommentR\x0fchildrenComment\x12\x1f\n" +
+	"\vreply_count\x18\x05 \x01(\x03R\n" +
+	"replyCount\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\x03R\tcreatedAt\x12\x19\n" +
+	"\bis_liked\x18\n" +
+	" \x01(\bR\aisLiked\"\xb3\x01\n" +
+	"\x0fChildrenComment\x12\x1d\n" +
+	"\n" +
+	"comment_id\x18\x01 \x01(\x03R\tcommentId\x12\x10\n" +
+	"\x03uid\x18\x02 \x01(\x03R\x03uid\x12\x1b\n" +
+	"\treply_uid\x18\x03 \x01(\x03R\breplyUid\x12\x18\n" +
+	"\acontent\x18\x04 \x01(\tR\acontent\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x05 \x01(\x03R\tcreatedAt\x12\x19\n" +
+	"\bis_liked\x18\n" +
+	" \x01(\bR\aisLiked\"\x8e\x01\n" +
+	"\rSetCommentReq\x12\x17\n" +
+	"\apost_id\x18\x01 \x01(\x03R\x06postId\x12\x10\n" +
+	"\x03uid\x18\x02 \x01(\x03R\x03uid\x12\x18\n" +
+	"\acontent\x18\x03 \x01(\tR\acontent\x12\x1b\n" +
+	"\tparent_id\x18\x04 \x01(\x03R\bparentId\x12\x1b\n" +
+	"\treply_uid\x18\x05 \x01(\x03R\breplyUid\"\\\n" +
+	"\n" +
+	"SetLikeReq\x12\x1b\n" +
+	"\ttarget_id\x18\x01 \x01(\x03R\btargetId\x12\x1f\n" +
+	"\vtarget_type\x18\x02 \x01(\x05R\n" +
+	"targetType\x12\x10\n" +
+	"\x03uid\x18\n" +
+	" \x01(\x03R\x03uid*G\n" +
 	"\bSortType\x12\x15\n" +
 	"\x11SORT_TYPE_DEFAULT\x10\x00\x12\x11\n" +
 	"\rSORT_TYPE_HOT\x10\x01\x12\x11\n" +
-	"\rSORT_TYPE_NEW\x10\x022\xd3\x01\n" +
+	"\rSORT_TYPE_NEW\x10\x022\xb1\x03\n" +
 	"\x04Post\x12A\n" +
 	"\x04List\x12\x1b.rpc.proto.post.PostListReq\x1a\x1c.rpc.proto.post.PostListResp\x12?\n" +
 	"\x06Create\x12\x1d.rpc.proto.post.PostCreateReq\x1a\x16.google.protobuf.Empty\x12G\n" +
-	"\x06Detail\x12\x1d.rpc.proto.post.PostDetailReq\x1a\x1e.rpc.proto.post.PostDetailRespB\tZ\amono/pbb\x06proto3"
+	"\x06Detail\x12\x1d.rpc.proto.post.PostDetailReq\x1a\x1e.rpc.proto.post.PostDetailResp\x12Q\n" +
+	"\x0eGetPostComment\x12\x1e.rpc.proto.post.PostCommentReq\x1a\x1f.rpc.proto.post.PostCommentResp\x12C\n" +
+	"\n" +
+	"SetComment\x12\x1d.rpc.proto.post.SetCommentReq\x1a\x16.google.protobuf.Empty\x12D\n" +
+	"\x0eSetLikeComment\x12\x1a.rpc.proto.post.SetLikeReq\x1a\x16.google.protobuf.EmptyB\tZ\amono/pbb\x06proto3"
 
 var (
 	file_post_proto_rawDescOnce sync.Once
@@ -608,31 +1123,45 @@ func file_post_proto_rawDescGZIP() []byte {
 }
 
 var file_post_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_post_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_post_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_post_proto_goTypes = []any{
-	(SortType)(0),          // 0: rpc.proto.post.SortType
-	(*PostListReq)(nil),    // 1: rpc.proto.post.PostListReq
-	(*PostListResp)(nil),   // 2: rpc.proto.post.PostListResp
-	(*PostListItem)(nil),   // 3: rpc.proto.post.PostListItem
-	(*PostCreateReq)(nil),  // 4: rpc.proto.post.PostCreateReq
-	(*PostDetailReq)(nil),  // 5: rpc.proto.post.PostDetailReq
-	(*PostDetailResp)(nil), // 6: rpc.proto.post.PostDetailResp
-	(*emptypb.Empty)(nil),  // 7: google.protobuf.Empty
+	(SortType)(0),           // 0: rpc.proto.post.SortType
+	(*PostListReq)(nil),     // 1: rpc.proto.post.PostListReq
+	(*PostListResp)(nil),    // 2: rpc.proto.post.PostListResp
+	(*PostListItem)(nil),    // 3: rpc.proto.post.PostListItem
+	(*PostCreateReq)(nil),   // 4: rpc.proto.post.PostCreateReq
+	(*PostDetailReq)(nil),   // 5: rpc.proto.post.PostDetailReq
+	(*PostDetailResp)(nil),  // 6: rpc.proto.post.PostDetailResp
+	(*PostCommentReq)(nil),  // 7: rpc.proto.post.PostCommentReq
+	(*PostCommentResp)(nil), // 8: rpc.proto.post.PostCommentResp
+	(*ParentComment)(nil),   // 9: rpc.proto.post.ParentComment
+	(*ChildrenComment)(nil), // 10: rpc.proto.post.ChildrenComment
+	(*SetCommentReq)(nil),   // 11: rpc.proto.post.SetCommentReq
+	(*SetLikeReq)(nil),      // 12: rpc.proto.post.SetLikeReq
+	(*emptypb.Empty)(nil),   // 13: google.protobuf.Empty
 }
 var file_post_proto_depIdxs = []int32{
-	0, // 0: rpc.proto.post.PostListReq.sort:type_name -> rpc.proto.post.SortType
-	3, // 1: rpc.proto.post.PostListResp.posts:type_name -> rpc.proto.post.PostListItem
-	1, // 2: rpc.proto.post.Post.List:input_type -> rpc.proto.post.PostListReq
-	4, // 3: rpc.proto.post.Post.Create:input_type -> rpc.proto.post.PostCreateReq
-	5, // 4: rpc.proto.post.Post.Detail:input_type -> rpc.proto.post.PostDetailReq
-	2, // 5: rpc.proto.post.Post.List:output_type -> rpc.proto.post.PostListResp
-	7, // 6: rpc.proto.post.Post.Create:output_type -> google.protobuf.Empty
-	6, // 7: rpc.proto.post.Post.Detail:output_type -> rpc.proto.post.PostDetailResp
-	5, // [5:8] is the sub-list for method output_type
-	2, // [2:5] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	0,  // 0: rpc.proto.post.PostListReq.sort:type_name -> rpc.proto.post.SortType
+	3,  // 1: rpc.proto.post.PostListResp.posts:type_name -> rpc.proto.post.PostListItem
+	9,  // 2: rpc.proto.post.PostCommentResp.parent_comment:type_name -> rpc.proto.post.ParentComment
+	10, // 3: rpc.proto.post.ParentComment.children_comment:type_name -> rpc.proto.post.ChildrenComment
+	1,  // 4: rpc.proto.post.Post.List:input_type -> rpc.proto.post.PostListReq
+	4,  // 5: rpc.proto.post.Post.Create:input_type -> rpc.proto.post.PostCreateReq
+	5,  // 6: rpc.proto.post.Post.Detail:input_type -> rpc.proto.post.PostDetailReq
+	7,  // 7: rpc.proto.post.Post.GetPostComment:input_type -> rpc.proto.post.PostCommentReq
+	11, // 8: rpc.proto.post.Post.SetComment:input_type -> rpc.proto.post.SetCommentReq
+	12, // 9: rpc.proto.post.Post.SetLikeComment:input_type -> rpc.proto.post.SetLikeReq
+	2,  // 10: rpc.proto.post.Post.List:output_type -> rpc.proto.post.PostListResp
+	13, // 11: rpc.proto.post.Post.Create:output_type -> google.protobuf.Empty
+	6,  // 12: rpc.proto.post.Post.Detail:output_type -> rpc.proto.post.PostDetailResp
+	8,  // 13: rpc.proto.post.Post.GetPostComment:output_type -> rpc.proto.post.PostCommentResp
+	13, // 14: rpc.proto.post.Post.SetComment:output_type -> google.protobuf.Empty
+	13, // 15: rpc.proto.post.Post.SetLikeComment:output_type -> google.protobuf.Empty
+	10, // [10:16] is the sub-list for method output_type
+	4,  // [4:10] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_post_proto_init() }
@@ -646,7 +1175,7 @@ func file_post_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_post_proto_rawDesc), len(file_post_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   6,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

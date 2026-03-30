@@ -12,8 +12,18 @@ import (
 	"mono/service/post/internal/infra/model"
 )
 
-func List(db *gorm.DB, ctx context.Context, req *pb.PostListReq) ([]*model.Post, int64, error) {
-	pDal := dal.Use(db).Post
+type Post struct {
+	db *gorm.DB
+}
+
+func NewPost(db *gorm.DB) *Post {
+	return &Post{
+		db: db,
+	}
+}
+
+func (p *Post) List(ctx context.Context, req *pb.PostListReq) ([]*model.Post, int64, error) {
+	pDal := dal.Use(p.db).Post
 
 	query := pDal.WithContext(ctx)
 	if req.PostType != 0 {
@@ -27,7 +37,7 @@ func List(db *gorm.DB, ctx context.Context, req *pb.PostListReq) ([]*model.Post,
 
 	data, err := query.Offset(int((req.Page - 1) * req.PageSize)).
 		Limit(int(req.PageSize)).
-		Order(getOrderExpr(db, req.Sort)).
+		Order(getOrderExpr(p.db, req.Sort)).
 		Find()
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, 0, err
@@ -46,8 +56,8 @@ func getOrderExpr(db *gorm.DB, order pb.SortType) field.Expr {
 	return orderMap[order]
 }
 
-func Create(db *gorm.DB, ctx context.Context, req *pb.PostCreateReq) error {
-	pDal := dal.Use(db).Post
+func (p *Post) Create(ctx context.Context, req *pb.PostCreateReq) error {
+	pDal := dal.Use(p.db).Post
 
 	return pDal.WithContext(ctx).Create(&model.Post{
 		UID:      req.Uid,
@@ -57,8 +67,8 @@ func Create(db *gorm.DB, ctx context.Context, req *pb.PostCreateReq) error {
 	})
 }
 
-func Detail(db *gorm.DB, ctx context.Context, req *pb.PostDetailReq) (*model.Post, error) {
-	pDal := dal.Use(db).Post
+func (p *Post) Detail(ctx context.Context, req *pb.PostDetailReq) (*model.Post, error) {
+	pDal := dal.Use(p.db).Post
 
 	data, err := pDal.WithContext(ctx).Where(pDal.ID.Eq(req.PostId)).First()
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {

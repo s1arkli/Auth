@@ -1,3 +1,4 @@
+/** 负责声明后端接口的公共返回结构和跨模块 DTO（数据传输对象）类型。 */
 export interface ApiResponse<T> {
   code: number
   msg: string
@@ -53,6 +54,8 @@ export interface PostListItemDTO {
   commentCount?: number
   view_count?: number
   viewCount?: number
+  is_liked?: boolean
+  isLiked?: boolean
   is_topped?: boolean
   isTopped?: boolean
   created_at?: number
@@ -86,6 +89,61 @@ export interface PostDetailData {
   collectCount?: number
   view_count?: number
   viewCount?: number
+  is_liked?: boolean
+  isLiked?: boolean
+}
+
+export interface PostCommentPayload {
+  postId: number
+  cursor: number
+  pageSize: number
+}
+
+export interface CreateCommentPayload {
+  postId: number
+  content: string
+  parentId?: number
+  replyUid?: number
+}
+
+export interface ToggleLikePayload {
+  targetId: number
+  targetType: 1 | 2
+}
+
+export interface ChildCommentDTO {
+  comment_id?: number
+  commentId?: number
+  uid: number
+  reply_uid?: number
+  replyUid?: number
+  content: string
+  created_at?: number
+  createdAt?: number
+  is_liked?: boolean
+  isLiked?: boolean
+}
+
+export interface ParentCommentDTO {
+  comment_id?: number
+  commentId?: number
+  uid: number
+  content: string
+  children_comment?: ChildCommentDTO[]
+  childrenComment?: ChildCommentDTO[]
+  reply_count?: number
+  replyCount?: number
+  created_at?: number
+  createdAt?: number
+  is_liked?: boolean
+  isLiked?: boolean
+}
+
+export interface PostCommentData {
+  parent_comment?: ParentCommentDTO[]
+  parentComment?: ParentCommentDTO[]
+  has_more?: boolean
+  hasMore?: boolean
 }
 
 export interface BatchUserInfoPayload {

@@ -1,3 +1,4 @@
+/** 负责渲染发帖页面并处理发帖表单提交流程。 */
 import { useId, useRef, useState, type FormEvent } from 'react'
 import type { ToastState } from '@/components/Toast'
 import { createPost } from '@/features/post'
@@ -21,6 +22,11 @@ interface PostComposerPageProps {
   getPostTypeByTopic: (topic: ComposerTopic) => number
 }
 
+/**
+ * @description 渲染发帖页表单，并在提交时校验登录态和帖子内容。
+ * @param props PostComposerPageProps，发帖页所需的受控参数和回调。
+ * @returns React 发帖页面组件。
+ */
 export function PostComposerPage({
   accessToken,
   topicOptions,
@@ -30,6 +36,7 @@ export function PostComposerPage({
   onToast,
   getPostTypeByTopic,
 }: PostComposerPageProps) {
+  // draftTitle（标题草稿）、draftContent（正文草稿）和 draftTopic（分类草稿）共同组成未提交帖子内容。
   const [draftTitle, setDraftTitle] = useState('')
   const [draftContent, setDraftContent] = useState('')
   const [draftTopic, setDraftTopic] = useState<ComposerTopic>('tech')
@@ -41,6 +48,11 @@ export function PostComposerPage({
   const draftTitleRef = useRef<HTMLInputElement | null>(null)
   const draftContentRef = useRef<HTMLTextAreaElement | null>(null)
 
+  /**
+   * @description 校验草稿内容并提交发帖请求。
+   * @param event FormEvent<HTMLFormElement>，表单提交事件。
+   * @returns Promise<void>
+   */
   async function handleCreatePost(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 

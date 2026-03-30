@@ -28,6 +28,18 @@ definitions:
     - account
     - password
     type: object
+  post.CommentReq:
+    properties:
+      cursor:
+        type: integer
+      pageSize:
+        type: integer
+      postId:
+        type: integer
+    required:
+    - pageSize
+    - postId
+    type: object
   post.CreateReq:
     properties:
       content:
@@ -57,6 +69,19 @@ definitions:
     required:
     - postId
     type: object
+  post.LikeReq:
+    properties:
+      targetId:
+        type: integer
+      targetType:
+        enum:
+        - 1
+        - 2
+        type: integer
+    required:
+    - targetId
+    - targetType
+    type: object
   post.ListReq:
     properties:
       page:
@@ -83,6 +108,22 @@ definitions:
     required:
     - page
     - pageSize
+    type: object
+  post.SetCommentReq:
+    properties:
+      content:
+        maxLength: 500
+        minLength: 1
+        type: string
+      parentId:
+        type: integer
+      postId:
+        type: integer
+      replyUid:
+        type: integer
+    required:
+    - content
+    - postId
     type: object
   user.BatchGetUserInfoReq:
     properties:
@@ -160,6 +201,40 @@ paths:
       responses: {}
       tags:
       - account
+  /api/v1/post/comment:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 评论
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/post.CommentReq'
+      produces:
+      - application/json
+      responses: {}
+      tags:
+      - post
+  /api/v1/post/comment/create:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 评论请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/post.SetCommentReq'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
+      tags:
+      - post
   /api/v1/post/create:
     post:
       consumes:
@@ -192,6 +267,24 @@ paths:
       produces:
       - application/json
       responses: {}
+      tags:
+      - post
+  /api/v1/post/like:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 点赞请求
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/post.LikeReq'
+      produces:
+      - application/json
+      responses: {}
+      security:
+      - BearerAuth: []
       tags:
       - post
   /api/v1/post/list:

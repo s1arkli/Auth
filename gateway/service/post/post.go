@@ -3,7 +3,6 @@ package post
 import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
 
 	"mono/gateway/ecode"
 	"mono/gateway/response"
@@ -43,10 +42,11 @@ func (s *Service) List(c *gin.Context) {
 		PageSize: req.PageSize,
 		PostType: req.PostType,
 		Sort:     pb.SortType(req.Sort),
+		Uid:      service.GetUserID(c),
 	})
 	if err != nil {
-		st, _ := status.FromError(err)
-		response.Fail(c, ecode.New(1, st.Message()))
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
 		return
 	}
 	response.Success(c, resp)
@@ -75,8 +75,8 @@ func (s *Service) Create(c *gin.Context) {
 		PostType: req.PostType,
 	})
 	if err != nil {
-		st, _ := status.FromError(err)
-		response.Fail(c, ecode.New(1, st.Message()))
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
 		return
 	}
 	response.Success(c, resp)
@@ -99,10 +99,100 @@ func (s *Service) Detail(c *gin.Context) {
 
 	resp, err := s.post.Detail(c, &pb.PostDetailReq{
 		PostId: req.PostId,
+		Uid:    service.GetUserID(c),
 	})
 	if err != nil {
-		st, _ := status.FromError(err)
-		response.Fail(c, ecode.New(1, st.Message()))
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
+		return
+	}
+	response.Success(c, resp)
+}
+
+// Comment 帖子评论列表
+// @Summary
+// @Description
+// @Tags         post
+// @Accept       json
+// @Produce      json
+// @Param        request  body  CommentReq  true  "评论"
+// @Router       /api/v1/post/comment [post]
+func (s *Service) Comment(c *gin.Context) {
+	req := new(CommentReq)
+	if err := c.ShouldBind(req); err != nil {
+		response.Fail(c, ecode.ParamErr)
+		return
+	}
+
+	resp, err := s.post.GetPostComment(c, &pb.PostCommentReq{
+		PostId:   req.PostId,
+		Cursor:   req.Cursor,
+		PageSize: req.PageSize,
+		Uid:      service.GetUserID(c),
+	})
+	if err != nil {
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
+		return
+	}
+	response.Success(c, resp)
+}
+
+// SetComment 发表评论
+// @Summary
+// @Description
+// @Tags         post
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request  body  SetCommentReq  true  "评论请求"
+// @Router       /api/v1/post/comment/create [post]
+func (s *Service) SetComment(c *gin.Context) {
+	req := new(SetCommentReq)
+	if err := c.ShouldBind(req); err != nil {
+		response.Fail(c, ecode.ParamErr)
+		return
+	}
+
+	resp, err := s.post.SetComment(c, &pb.SetCommentReq{
+		PostId:   req.PostId,
+		Uid:      service.GetUserID(c),
+		Content:  req.Content,
+		ParentId: req.ParentId,
+		ReplyUid: req.ReplyUid,
+	})
+	if err != nil {
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
+		return
+	}
+	response.Success(c, resp)
+}
+
+// Like 点赞/取消点赞
+// @Summary
+// @Description
+// @Tags         post
+// @Accept       json
+// @Produce      json
+// @Security     BearerAuth
+// @Param        request  body  LikeReq  true  "点赞请求"
+// @Router       /api/v1/post/like [post]
+func (s *Service) Like(c *gin.Context) {
+	req := new(LikeReq)
+	if err := c.ShouldBind(req); err != nil {
+		response.Fail(c, ecode.ParamErr)
+		return
+	}
+
+	resp, err := s.post.SetLikeComment(c, &pb.SetLikeReq{
+		TargetId:   req.TargetId,
+		TargetType: req.TargetType,
+		Uid:        service.GetUserID(c),
+	})
+	if err != nil {
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
 		return
 	}
 	response.Success(c, resp)

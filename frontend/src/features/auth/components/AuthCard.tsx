@@ -1,6 +1,8 @@
+/** 负责渲染登录和注册共用的认证卡片界面。 */
 import type { FormEvent, RefObject } from 'react'
 import type { AuthCopyContent, AuthMode } from '@/features/auth/types/auth.types'
 
+/** 认证卡片组件所需的受控状态和事件回调。 */
 interface AuthCardProps {
   mode: AuthMode
   transitionStage: 'idle' | 'leaving' | 'entering'
@@ -22,6 +24,11 @@ interface AuthCardProps {
   onOpenHome: () => void
 }
 
+/**
+ * @description 渲染登录/注册表单，并把交互事件全部透传给控制器 Hook（钩子）处理。
+ * @param props AuthCardProps，认证页面需要的受控字段、提示信息和交互回调。
+ * @returns React 认证卡片组件。
+ */
 export function AuthCard({
   mode,
   transitionStage,

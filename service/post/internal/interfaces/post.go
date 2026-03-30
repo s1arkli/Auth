@@ -5,7 +5,6 @@ import (
 
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"gorm.io/gorm"
 
 	"mono/pb"
 	"mono/service/post/internal/infra"
@@ -13,13 +12,19 @@ import (
 
 type Post struct {
 	pb.UnimplementedPostServer
-	db         *gorm.DB
+	post    *infra.Post
+	comment *infra.Comment
+	like    *infra.Like
+
 	userClient pb.UserClient
 }
 
-func NewPost(db *gorm.DB, user pb.UserClient) *Post {
+func NewPost(post *infra.Post, comment *infra.Comment, like *infra.Like, user pb.UserClient) *Post {
 	return &Post{
-		db:         db,
+		post:    post,
+		comment: comment,
+		like:    like,
+
 		userClient: user,
 	}
 }
@@ -27,7 +32,7 @@ func NewPost(db *gorm.DB, user pb.UserClient) *Post {
 func (p *Post) List(ctx context.Context, req *pb.PostListReq) (*pb.PostListResp, error) {
 	errRes := &pb.PostListResp{}
 
-	data, total, err := infra.List(p.db, ctx, req)
+	data, total, err := p.post.List(ctx, req)
 	if err != nil {
 		return errRes, status.Error(1, err.Error())
 	}
@@ -39,15 +44,28 @@ func (p *Post) List(ctx context.Context, req *pb.PostListReq) (*pb.PostListResp,
 	if err == nil {
 		appendUserInfo(resp, userMap.Users)
 	}
+
+	// 设置 is_liked
+	if req.Uid > 0 {
+		postIDs := make([]int64, 0, len(data))
+		for _, v := range data {
+			postIDs = append(postIDs, v.ID)
+		}
+		likedMap := p.like.BatchIsLiked(ctx, req.Uid, postIDs, 1)
+		for _, item := range resp.Posts {
+			item.IsLiked = likedMap[item.PostId]
+		}
+	}
+
 	return resp, nil
 }
 
 func (p *Post) Create(ctx context.Context, req *pb.PostCreateReq) (*emptypb.Empty, error) {
-	return &emptypb.Empty{}, status.Error(1, infra.Create(p.db, ctx, req).Error())
+	return &emptypb.Empty{}, status.Error(1, p.post.Create(ctx, req).Error())
 }
 
 func (p *Post) Detail(ctx context.Context, req *pb.PostDetailReq) (*pb.PostDetailResp, error) {
-	data, err := infra.Detail(p.db, ctx, req)
+	data, err := p.post.Detail(ctx, req)
 	if err != nil {
 		return nil, status.Error(1, err.Error())
 	}
@@ -67,5 +85,11 @@ func (p *Post) Detail(ctx context.Context, req *pb.PostDetailReq) (*pb.PostDetai
 		res.Avatar = user.Avatar
 		res.Nickname = user.Nickname
 	}
+
+	// 设置 is_liked
+	if req.Uid > 0 {
+		res.IsLiked = p.like.IsLiked(ctx, req.Uid, req.PostId, 1)
+	}
+
 	return res, nil
 }

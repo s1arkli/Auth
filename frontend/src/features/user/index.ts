@@ -1,3 +1,4 @@
+/** 负责汇总导出用户模块的接口、页面和类型。 */
 export {
   fetchBatchUserInfo,
   updateUserProfile,

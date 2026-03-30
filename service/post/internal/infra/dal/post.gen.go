@@ -32,6 +32,8 @@ func newPost(db *gorm.DB, opts ...gen.DOOption) post {
 	_post.UID = field.NewInt64(tableName, "uid")
 	_post.Title = field.NewString(tableName, "title")
 	_post.Content = field.NewString(tableName, "content")
+	_post.IsTopped = field.NewBool(tableName, "is_topped")
+	_post.IsDraft = field.NewBool(tableName, "is_draft")
 	_post.PostType = field.NewInt16(tableName, "post_type")
 	_post.LikeCount = field.NewInt32(tableName, "like_count")
 	_post.CommentCount = field.NewInt32(tableName, "comment_count")
@@ -51,14 +53,16 @@ type post struct {
 
 	ALL          field.Asterisk
 	ID           field.Int64
-	UID          field.Int64  // 所属用户id
-	Title        field.String // 标题
-	Content      field.String // 正文
-	PostType     field.Int16  // 1=普通帖子
-	LikeCount    field.Int32  // 点赞数
-	CommentCount field.Int32  // 评论数
-	CollectCount field.Int32  // 收藏数
-	ViewCount    field.Int32  // 浏览量
+	UID          field.Int64
+	Title        field.String
+	Content      field.String
+	IsTopped     field.Bool
+	IsDraft      field.Bool
+	PostType     field.Int16
+	LikeCount    field.Int32
+	CommentCount field.Int32
+	CollectCount field.Int32
+	ViewCount    field.Int32
 	CreatedAt    field.Time
 	UpdatedAt    field.Time
 	DeletedAt    field.Field
@@ -82,6 +86,8 @@ func (p *post) updateTableName(table string) *post {
 	p.UID = field.NewInt64(table, "uid")
 	p.Title = field.NewString(table, "title")
 	p.Content = field.NewString(table, "content")
+	p.IsTopped = field.NewBool(table, "is_topped")
+	p.IsDraft = field.NewBool(table, "is_draft")
 	p.PostType = field.NewInt16(table, "post_type")
 	p.LikeCount = field.NewInt32(table, "like_count")
 	p.CommentCount = field.NewInt32(table, "comment_count")
@@ -114,11 +120,13 @@ func (p *post) GetFieldByName(fieldName string) (field.OrderExpr, bool) {
 }
 
 func (p *post) fillFieldMap() {
-	p.fieldMap = make(map[string]field.Expr, 12)
+	p.fieldMap = make(map[string]field.Expr, 14)
 	p.fieldMap["id"] = p.ID
 	p.fieldMap["uid"] = p.UID
 	p.fieldMap["title"] = p.Title
 	p.fieldMap["content"] = p.Content
+	p.fieldMap["is_topped"] = p.IsTopped
+	p.fieldMap["is_draft"] = p.IsDraft
 	p.fieldMap["post_type"] = p.PostType
 	p.fieldMap["like_count"] = p.LikeCount
 	p.fieldMap["comment_count"] = p.CommentCount

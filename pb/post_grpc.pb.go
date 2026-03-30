@@ -20,9 +20,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Post_List_FullMethodName   = "/rpc.proto.post.Post/List"
-	Post_Create_FullMethodName = "/rpc.proto.post.Post/Create"
-	Post_Detail_FullMethodName = "/rpc.proto.post.Post/Detail"
+	Post_List_FullMethodName           = "/rpc.proto.post.Post/List"
+	Post_Create_FullMethodName         = "/rpc.proto.post.Post/Create"
+	Post_Detail_FullMethodName         = "/rpc.proto.post.Post/Detail"
+	Post_GetPostComment_FullMethodName = "/rpc.proto.post.Post/GetPostComment"
+	Post_SetComment_FullMethodName     = "/rpc.proto.post.Post/SetComment"
+	Post_SetLikeComment_FullMethodName = "/rpc.proto.post.Post/SetLikeComment"
 )
 
 // PostClient is the client API for Post service.
@@ -32,6 +35,9 @@ type PostClient interface {
 	List(ctx context.Context, in *PostListReq, opts ...grpc.CallOption) (*PostListResp, error)
 	Create(ctx context.Context, in *PostCreateReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Detail(ctx context.Context, in *PostDetailReq, opts ...grpc.CallOption) (*PostDetailResp, error)
+	GetPostComment(ctx context.Context, in *PostCommentReq, opts ...grpc.CallOption) (*PostCommentResp, error)
+	SetComment(ctx context.Context, in *SetCommentReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	SetLikeComment(ctx context.Context, in *SetLikeReq, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type postClient struct {
@@ -72,6 +78,36 @@ func (c *postClient) Detail(ctx context.Context, in *PostDetailReq, opts ...grpc
 	return out, nil
 }
 
+func (c *postClient) GetPostComment(ctx context.Context, in *PostCommentReq, opts ...grpc.CallOption) (*PostCommentResp, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PostCommentResp)
+	err := c.cc.Invoke(ctx, Post_GetPostComment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postClient) SetComment(ctx context.Context, in *SetCommentReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Post_SetComment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postClient) SetLikeComment(ctx context.Context, in *SetLikeReq, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, Post_SetLikeComment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServer is the server API for Post service.
 // All implementations must embed UnimplementedPostServer
 // for forward compatibility.
@@ -79,6 +115,9 @@ type PostServer interface {
 	List(context.Context, *PostListReq) (*PostListResp, error)
 	Create(context.Context, *PostCreateReq) (*emptypb.Empty, error)
 	Detail(context.Context, *PostDetailReq) (*PostDetailResp, error)
+	GetPostComment(context.Context, *PostCommentReq) (*PostCommentResp, error)
+	SetComment(context.Context, *SetCommentReq) (*emptypb.Empty, error)
+	SetLikeComment(context.Context, *SetLikeReq) (*emptypb.Empty, error)
 	mustEmbedUnimplementedPostServer()
 }
 
@@ -97,6 +136,15 @@ func (UnimplementedPostServer) Create(context.Context, *PostCreateReq) (*emptypb
 }
 func (UnimplementedPostServer) Detail(context.Context, *PostDetailReq) (*PostDetailResp, error) {
 	return nil, status.Error(codes.Unimplemented, "method Detail not implemented")
+}
+func (UnimplementedPostServer) GetPostComment(context.Context, *PostCommentReq) (*PostCommentResp, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetPostComment not implemented")
+}
+func (UnimplementedPostServer) SetComment(context.Context, *SetCommentReq) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetComment not implemented")
+}
+func (UnimplementedPostServer) SetLikeComment(context.Context, *SetLikeReq) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method SetLikeComment not implemented")
 }
 func (UnimplementedPostServer) mustEmbedUnimplementedPostServer() {}
 func (UnimplementedPostServer) testEmbeddedByValue()              {}
@@ -173,6 +221,60 @@ func _Post_Detail_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Post_GetPostComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PostCommentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).GetPostComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_GetPostComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).GetPostComment(ctx, req.(*PostCommentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Post_SetComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetCommentReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).SetComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_SetComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).SetComment(ctx, req.(*SetCommentReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Post_SetLikeComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetLikeReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).SetLikeComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_SetLikeComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).SetLikeComment(ctx, req.(*SetLikeReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Post_ServiceDesc is the grpc.ServiceDesc for Post service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -191,6 +293,18 @@ var Post_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Detail",
 			Handler:    _Post_Detail_Handler,
+		},
+		{
+			MethodName: "GetPostComment",
+			Handler:    _Post_GetPostComment_Handler,
+		},
+		{
+			MethodName: "SetComment",
+			Handler:    _Post_SetComment_Handler,
+		},
+		{
+			MethodName: "SetLikeComment",
+			Handler:    _Post_SetLikeComment_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

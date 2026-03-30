@@ -1,3 +1,8 @@
+/** 负责提供帖子模块使用的内联 SVG（可缩放矢量图形）图标组件。 */
+/**
+ * @description 渲染帖子搜索框使用的放大镜图标。
+ * @returns 搜索图标组件。
+ */
 export function SearchIcon() {
   return (
     <svg aria-hidden="true" className="forum-icon forum-icon--muted" viewBox="0 0 24 24">
@@ -13,6 +18,10 @@ export function SearchIcon() {
   )
 }
 
+/**
+ * @description 渲染发帖按钮使用的加号图标。
+ * @returns 加号图标组件。
+ */
 export function PlusIcon() {
   return (
     <svg aria-hidden="true" className="forum-icon forum-icon--brand" viewBox="0 0 24 24">
@@ -28,6 +37,10 @@ export function PlusIcon() {
   )
 }
 
+/**
+ * @description 渲染用户菜单展开态使用的箭头图标。
+ * @returns 向下箭头图标组件。
+ */
 export function ChevronDownIcon() {
   return (
     <svg aria-hidden="true" className="forum-icon forum-icon--soft" viewBox="0 0 24 24">
@@ -43,6 +56,11 @@ export function ChevronDownIcon() {
   )
 }
 
+/**
+ * @description 根据统计项类型渲染帖子卡片和详情页共用的小图标。
+ * @param params {{ type: 'like' | 'comment' | 'view' | 'favorite' }}，要渲染的统计项类型。
+ * @returns 对应统计项的图标组件。
+ */
 export function StatIcon({ type }: { type: 'like' | 'comment' | 'view' | 'favorite' }) {
   if (type === 'like') {
     return (

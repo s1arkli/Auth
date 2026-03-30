@@ -1,3 +1,4 @@
+/** 负责封装带候选基路径回退能力的 POST 请求调用。 */
 import { appEnv } from '@/config/env'
 import { HttpRequestError, SERVICE_UNAVAILABLE_MESSAGE } from '@/lib/http/errors'
 import { appLogger } from '@/lib/logger'
@@ -6,6 +7,11 @@ import type { ApiResponse } from '@/types/api'
 
 const defaultBaseCandidates = ['/api/v1/account', '/account']
 
+/**
+ * @description 合并并去重候选接口前缀，兼容网关路径和直连服务路径。
+ * @param candidates string[] | undefined，调用方显式传入的候选路径。
+ * @returns string[]，按优先级排列的唯一候选路径列表。
+ */
 function buildBaseCandidates(candidates?: string[]) {
   const seen = new Set<string>()
   const values = candidates ?? [appEnv.apiBasePath, ...defaultBaseCandidates]
@@ -20,6 +26,20 @@ function buildBaseCandidates(candidates?: string[]) {
   })
 }
 
+/**
+ * @description 发送 JSON（JavaScript 对象表示法）格式的 POST 请求，并在 404 时自动尝试下一个候选基路径。
+ * @param path string，接口相对路径。
+ * @param payload TPayload，请求体数据。
+ * @param options PostRequestOptions，请求附加配置，例如 Token（令牌）和候选基路径。
+ * @returns Promise<TResponse>，后端业务成功后的 data 字段。
+ * @example
+ * ```ts
+ * const data = await postJson<LoginData, LoginPayload>('/login', {
+ *   account: 'demo',
+ *   password: '12345678',
+ * })
+ * ```
+ */
 export async function postJson<TResponse, TPayload>(
   path: string,
   payload: TPayload,
@@ -60,6 +80,7 @@ export async function postJson<TResponse, TPayload>(
       })
 
       if (response.status === 404) {
+        // 404 更像是当前前缀没命中服务，继续尝试下一个候选地址比直接报错更适合联调场景。
         appLogger.log({
           level: 'warn',
           category: 'request',
@@ -136,6 +157,7 @@ export async function postJson<TResponse, TPayload>(
           : new HttpRequestError(SERVICE_UNAVAILABLE_MESSAGE, {
               kind: 'service_unavailable',
             })
+      // 进入异常分支时通常是网络失败或服务异常，继续切换前缀意义不大，直接交给页面层处理。
       break
     }
   }
@@ -143,6 +165,19 @@ export async function postJson<TResponse, TPayload>(
   throw lastError ?? new HttpRequestError(SERVICE_UNAVAILABLE_MESSAGE, { kind: 'service_unavailable' })
 }
 
+/**
+ * @description 发送 FormData（表单数据）格式的 POST 请求，常用于文件上传场景。
+ * @param path string，接口相对路径。
+ * @param payload FormData，浏览器原生表单数据对象。
+ * @param options PostRequestOptions，请求附加配置，例如 Token（令牌）和候选基路径。
+ * @returns Promise<TResponse>，后端业务成功后的 data 字段。
+ * @example
+ * ```ts
+ * const formData = new FormData()
+ * formData.append('file', file)
+ * const data = await postForm<UploadAvatarData>('/upload/avatar', formData)
+ * ```
+ */
 export async function postForm<TResponse>(
   path: string,
   payload: FormData,
@@ -180,6 +215,7 @@ export async function postForm<TResponse>(
       })
 
       if (response.status === 404) {
+        // 文件上传也复用候选前缀回退，便于网关路由尚未完全稳定时继续联调。
         appLogger.log({
           level: 'warn',
           category: 'request',

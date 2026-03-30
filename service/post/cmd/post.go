@@ -12,6 +12,7 @@ import (
 	"mono/pb"
 	"mono/pkg/initial"
 	"mono/service/post/internal/client"
+	"mono/service/post/internal/infra"
 	"mono/service/post/internal/interfaces"
 	"mono/service/post/pkg"
 )
@@ -42,8 +43,12 @@ var authCmd = &cobra.Command{
 
 		s := grpc.NewServer()
 
-		// 这一步是必须的：把你的实现注册到 gRPC Server
-		pb.RegisterPostServer(s, interfaces.NewPost(db, user))
+		// 业务逻辑注册到 gRPC Server
+		post := infra.NewPost(db)
+		comment := infra.NewComment(db)
+		like := infra.NewLike(db)
+
+		pb.RegisterPostServer(s, interfaces.NewPost(post, comment, like, user))
 
 		log.Printf("grpc server listening on :%s", port)
 		if err := s.Serve(lis); err != nil {

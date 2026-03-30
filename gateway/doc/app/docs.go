@@ -88,6 +88,61 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/v1/post/comment": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "parameters": [
+                    {
+                        "description": "评论",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/post.CommentReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/post/comment/create": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "parameters": [
+                    {
+                        "description": "评论请求",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/post.SetCommentReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/v1/post/create": {
             "post": {
                 "security": [
@@ -137,6 +192,36 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/post.DetailReq"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/v1/post/like": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "post"
+                ],
+                "parameters": [
+                    {
+                        "description": "点赞请求",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/post.LikeReq"
                         }
                     }
                 ],
@@ -258,6 +343,24 @@ const docTemplate = `{
                 }
             }
         },
+        "post.CommentReq": {
+            "type": "object",
+            "required": [
+                "pageSize",
+                "postId"
+            ],
+            "properties": {
+                "cursor": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "postId": {
+                    "type": "integer"
+                }
+            }
+        },
         "post.CreateReq": {
             "type": "object",
             "required": [
@@ -298,6 +401,25 @@ const docTemplate = `{
                 }
             }
         },
+        "post.LikeReq": {
+            "type": "object",
+            "required": [
+                "targetId",
+                "targetType"
+            ],
+            "properties": {
+                "targetId": {
+                    "type": "integer"
+                },
+                "targetType": {
+                    "type": "integer",
+                    "enum": [
+                        1,
+                        2
+                    ]
+                }
+            }
+        },
         "post.ListReq": {
             "type": "object",
             "required": [
@@ -331,6 +453,29 @@ const docTemplate = `{
                         1,
                         2
                     ]
+                }
+            }
+        },
+        "post.SetCommentReq": {
+            "type": "object",
+            "required": [
+                "content",
+                "postId"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string",
+                    "maxLength": 500,
+                    "minLength": 1
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "postId": {
+                    "type": "integer"
+                },
+                "replyUid": {
+                    "type": "integer"
                 }
             }
         },

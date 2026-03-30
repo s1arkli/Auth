@@ -1,7 +1,9 @@
+/** 负责维护认证模块的本地存储键和页面文案。 */
 import type { AuthCopyContent, AuthMode } from '@/features/auth/types/auth.types'
 
 export const authStorageKey = 'mono.auth'
 
+/** 登录和注册模式对应的界面文案配置。 */
 export const authContentMap: Record<AuthMode, AuthCopyContent> = {
   login: {
     heroTitle: '先登录，再进入你的工作空间。',

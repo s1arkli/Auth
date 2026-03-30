@@ -1,3 +1,4 @@
+/** 负责管理登录、注册、持久化和当前用户资料的页面状态。 */
 import { startTransition, useEffect, useId, useMemo, useRef, useState, type FormEvent } from 'react'
 import { login, register } from '@/features/auth/api/auth.api'
 import { authContentMap } from '@/features/auth/constants/auth.constants'
@@ -18,6 +19,11 @@ interface UseAuthControllerOptions {
   onToastChange: (toast: AuthToast | null) => void
 }
 
+/**
+ * @description 根据持久化登录态构建当前页面可直接消费的用户资料对象。
+ * @param authState AuthSuccessState | null，登录成功后保存的用户状态。
+ * @returns UserProfile | null，页面展示使用的用户资料。
+ */
 function buildCurrentProfile(authState: AuthSuccessState | null): UserProfile | null {
   if (!authState || typeof authState.uid !== 'number') {
     return null
@@ -30,6 +36,11 @@ function buildCurrentProfile(authState: AuthSuccessState | null): UserProfile | 
   }
 }
 
+/**
+ * @description 统一处理认证页的表单输入、登录注册请求、登录态持久化和错误反馈。
+ * @param options UseAuthControllerOptions，登录成功回调和全局 Toast（轻提示）更新函数。
+ * @returns 认证页面需要消费的状态、输入引用和事件处理函数集合。
+ */
 export function useAuthController({ onLoginSuccess, onToastChange }: UseAuthControllerOptions) {
   const [bootAuth] = useState<AuthSuccessState | null>(() => readPersistedAuth())
   const [mode, setMode] = useState<AuthMode>('login')
@@ -39,7 +50,9 @@ export function useAuthController({ onLoginSuccess, onToastChange }: UseAuthCont
   const [authError, setAuthError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [accessToken, setAccessToken] = useState<string | null>(() => bootAuth?.accessToken ?? null)
+  // currentProfile（当前资料）是帖子页和个人中心共用的前端展示态，不直接暴露 AuthSuccessState。
   const [currentProfile, setCurrentProfile] = useState<UserProfile | null>(() => buildCurrentProfile(bootAuth))
+  // 通过两个阶段状态驱动表单淡出/淡入，避免模式切换时内容瞬切。
   const [transitionStage, setTransitionStage] = useState<'idle' | 'leaving' | 'entering'>('idle')
   const switchTimerRef = useRef<number | null>(null)
   const enterTimerRef = useRef<number | null>(null)
@@ -68,6 +81,7 @@ export function useAuthController({ onLoginSuccess, onToastChange }: UseAuthCont
       return
     }
 
+    // 每次关键认证信息变化都立即落盘，避免刷新页面后丢失登录态和已更新的昵称头像。
     persistAuthState({
       account: account.trim(),
       accessToken,

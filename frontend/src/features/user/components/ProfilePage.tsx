@@ -1,3 +1,4 @@
+/** 负责渲染个人中心页面，并处理昵称修改、头像裁剪和资料保存。 */
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import type { ToastState } from '@/components/Toast'
 import { updateUserProfile, uploadAvatar, type UserProfile } from '@/features/user'
@@ -13,6 +14,11 @@ interface ProfilePageProps {
   onToast: (toast: ToastState) => void
 }
 
+/**
+ * @description 渲染个人中心页面，支持昵称编辑、头像选择裁剪和资料保存。
+ * @param props ProfilePageProps，个人中心所需的账号、资料和交互回调。
+ * @returns React 个人中心页面组件。
+ */
 export function ProfilePage({
   account,
   profile,
@@ -22,6 +28,7 @@ export function ProfilePage({
 }: ProfilePageProps) {
   const [nickname, setNickname] = useState(profile?.nickname || account)
   const [avatar, setAvatar] = useState(profile?.avatar || '')
+  // selectedFile（已裁剪头像文件）只在用户点击保存时真正上传，避免频繁试裁就发请求。
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [cropSource, setCropSource] = useState<string | null>(null)
   const [cropFileName, setCropFileName] = useState('')
@@ -53,6 +60,11 @@ export function ProfilePage({
     }
   }, [])
 
+  /**
+   * @description 校验资料表单并按需上传头像，再提交资料更新请求。
+   * @param event FormEvent<HTMLFormElement>，表单提交事件。
+   * @returns Promise<void>
+   */
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -113,6 +125,11 @@ export function ProfilePage({
     }
   }
 
+  /**
+   * @description 接收用户选择的原始图片文件，并启动裁剪弹窗。
+   * @param file File | null，文件选择框当前选中的图片。
+   * @returns void
+   */
   function handleAvatarPick(file: File | null) {
     if (!file) {
       return
@@ -136,6 +153,10 @@ export function ProfilePage({
     setProfileError('')
   }
 
+  /**
+   * @description 清理当前头像裁剪会话创建的临时 URL（统一资源定位符）和输入状态。
+   * @returns void
+   */
   function clearCropSession() {
     if (cropObjectUrlRef.current) {
       window.URL.revokeObjectURL(cropObjectUrlRef.current)
@@ -154,11 +175,17 @@ export function ProfilePage({
     clearCropSession()
   }
 
+  /**
+   * @description 接收裁剪完成的头像文件，并更新页面预览。
+   * @param file File，用户确认后的头像文件。
+   * @returns void
+   */
   function handleCropConfirm(file: File) {
     if (objectUrlRef.current) {
       window.URL.revokeObjectURL(objectUrlRef.current)
     }
 
+    // 预览先使用本地 URL，只有用户真正保存资料时才把文件上传到后端。
     const previewUrl = window.URL.createObjectURL(file)
     objectUrlRef.current = previewUrl
     setSelectedFile(file)

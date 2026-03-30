@@ -47,6 +47,9 @@ func Api(r *gin.Engine) {
 		p := v1.Group("/post")
 		p.POST("/list", service.List)
 		p.POST("/detail", service.Detail)
+		p.POST("/comment", service.Comment)
+		p.POST("/comment/create", service.SetComment).Use(middleware.Auth())
+		p.POST("/like", service.Like).Use(middleware.Auth())
 		p.POST("/create", service.Create).Use(middleware.Auth())
 	}
 

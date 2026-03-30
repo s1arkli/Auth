@@ -16,34 +16,44 @@ import (
 )
 
 var (
-	Q    = new(Query)
-	Post *post
+	Q       = new(Query)
+	Comment *comment
+	Like    *like
+	Post    *post
 )
 
 func SetDefault(db *gorm.DB, opts ...gen.DOOption) {
 	*Q = *Use(db, opts...)
+	Comment = &Q.Comment
+	Like = &Q.Like
 	Post = &Q.Post
 }
 
 func Use(db *gorm.DB, opts ...gen.DOOption) *Query {
 	return &Query{
-		db:   db,
-		Post: newPost(db, opts...),
+		db:      db,
+		Comment: newComment(db, opts...),
+		Like:    newLike(db, opts...),
+		Post:    newPost(db, opts...),
 	}
 }
 
 type Query struct {
 	db *gorm.DB
 
-	Post post
+	Comment comment
+	Like    like
+	Post    post
 }
 
 func (q *Query) Available() bool { return q.db != nil }
 
 func (q *Query) clone(db *gorm.DB) *Query {
 	return &Query{
-		db:   db,
-		Post: q.Post.clone(db),
+		db:      db,
+		Comment: q.Comment.clone(db),
+		Like:    q.Like.clone(db),
+		Post:    q.Post.clone(db),
 	}
 }
 
@@ -57,18 +67,24 @@ func (q *Query) WriteDB() *Query {
 
 func (q *Query) ReplaceDB(db *gorm.DB) *Query {
 	return &Query{
-		db:   db,
-		Post: q.Post.replaceDB(db),
+		db:      db,
+		Comment: q.Comment.replaceDB(db),
+		Like:    q.Like.replaceDB(db),
+		Post:    q.Post.replaceDB(db),
 	}
 }
 
 type queryCtx struct {
-	Post IPostDo
+	Comment ICommentDo
+	Like    ILikeDo
+	Post    IPostDo
 }
 
 func (q *Query) WithContext(ctx context.Context) *queryCtx {
 	return &queryCtx{
-		Post: q.Post.WithContext(ctx),
+		Comment: q.Comment.WithContext(ctx),
+		Like:    q.Like.WithContext(ctx),
+		Post:    q.Post.WithContext(ctx),
 	}
 }
 

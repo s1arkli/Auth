@@ -3,7 +3,6 @@ package auth
 import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
 
 	authpb "mono/pb"
 
@@ -44,8 +43,8 @@ func (s *Service) Register(c *gin.Context) {
 		Password: req.Password,
 	})
 	if err != nil {
-		st, _ := status.FromError(err)
-		response.Fail(c, ecode.New(1, st.Message()))
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
 		return
 	}
 	response.Success(c, "ok")
@@ -72,8 +71,8 @@ func (s *Service) Login(c *gin.Context) {
 		Password: req.Password,
 	})
 	if err != nil {
-		st, _ := status.FromError(err)
-		response.Fail(c, ecode.New(1, st.Message()))
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
 		return
 	}
 
@@ -106,8 +105,8 @@ func (s *Service) Refresh(c *gin.Context) {
 	})
 	if err != nil {
 		c.SetCookie("refresh_token", "", -1, "/api/v1/account/refresh", "", true, true)
-		st, _ := status.FromError(err)
-		response.Fail(c, ecode.New(1, st.Message()))
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
 		return
 	}
 

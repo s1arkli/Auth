@@ -1,3 +1,4 @@
+/** 负责根据登录态和页面模式切换论坛、认证、发帖和个人中心视图。 */
 import { useEffect, useState } from 'react'
 import {
   AuthCard,
@@ -22,6 +23,11 @@ import { appLogger, useBrowserLogBridge } from './lib/logger'
 import { ProfilePage } from './features/user'
 
 type PageMode = 'forum-guest' | 'forum-member' | 'auth' | 'compose' | 'detail' | 'profile'
+
+/**
+ * @description 管理前端单页应用的主流程状态，并把各业务页面串成完整体验。
+ * @returns 当前页面模式对应的 React 页面结构。
+ */
 export default function App() {
   useBrowserLogBridge()
 
@@ -31,8 +37,10 @@ export default function App() {
     onToastChange: setToast,
   })
   const [pageMode, setPageMode] = useState<PageMode>(() => (auth.bootAuth?.accessToken ? 'forum-member' : 'forum-guest'))
+  // 通过自增信号驱动帖子页刷新，避免在多个页面之间直接共享复杂列表状态。
   const [forumReloadSignal, setForumReloadSignal] = useState(0)
   const [detailSourcePost, setDetailSourcePost] = useState<PostFeedItem | null>(null)
+  // 详情页返回时需要回到进入前的论坛视图，而不是一律跳回登录态页面。
   const [detailReturnMode, setDetailReturnMode] = useState<'forum-guest' | 'forum-member'>('forum-member')
 
   useEffect(() => {
@@ -73,6 +81,12 @@ export default function App() {
     setPageMode('forum-member')
   }
 
+  /**
+   * @description 记录详情页来源帖子和返回目标，保证从不同入口进入时都能正确回跳。
+   * @param post PostFeedItem（帖子卡片视图数据），当前点击的帖子摘要。
+   * @param returnMode 'forum-guest' | 'forum-member'，详情页返回时应恢复的论坛视图。
+   * @returns void
+   */
   function handleOpenDetailPage(post: PostFeedItem, returnMode: 'forum-guest' | 'forum-member') {
     setDetailSourcePost(post)
     setDetailReturnMode(returnMode)
@@ -172,7 +186,11 @@ export default function App() {
       <>
         <Toast toast={toast} />
         <PostDetailPage
+          accessToken={auth.accessToken}
+          currentProfile={auth.currentProfile}
           onBack={() => setPageMode(detailReturnMode)}
+          onPostMutated={() => setForumReloadSignal((value) => value + 1)}
+          onRequireAuth={() => setPageMode('auth')}
           onToast={setToast}
           sourcePost={detailSourcePost}
           topicLabel={detailSourcePost.topic ? topicLabels[detailSourcePost.topic] : '帖子'}

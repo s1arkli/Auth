@@ -3,7 +3,6 @@ package user
 import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
 
 	"mono/gateway/ecode"
 	"mono/gateway/response"
@@ -41,8 +40,8 @@ func (s *Service) BatchGetUsersInfo(c *gin.Context) {
 		Uids: req.Uids,
 	})
 	if err != nil {
-		st, _ := status.FromError(err)
-		response.Fail(c, ecode.New(1, st.Message()))
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
 		return
 	}
 	response.Success(c, userMap)
@@ -68,8 +67,8 @@ func (s *Service) Update(c *gin.Context) {
 		Nickname: req.Nickname,
 		Avatar:   req.Avatar,
 	}); err != nil {
-		st, _ := status.FromError(err)
-		response.Fail(c, ecode.New(1, st.Message()))
+		_, msg := ecode.FromRpcErr(err)
+		response.Fail(c, ecode.New(1, msg))
 		return
 	}
 	response.Success(c, "ok")

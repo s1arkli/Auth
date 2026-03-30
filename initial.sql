@@ -23,6 +23,9 @@ CREATE TABLE IF NOT EXISTS post (
     is_topped     BOOLEAN      NOT NULL DEFAULT false,
     is_draft      BOOLEAN      NOT NULL DEFAULT false,
     post_type     SMALLINT     NOT NULL DEFAULT 1, -- 1=技术，2=生活，3=分享
+
+    top_comment BIGINT DEFAULT 0, -- 指定评论，0=未置顶
+
     like_count    INTEGER      NOT NULL DEFAULT 0,
     comment_count INTEGER      NOT NULL DEFAULT 0,
     collect_count INTEGER      NOT NULL DEFAULT 0,
@@ -33,6 +36,45 @@ CREATE TABLE IF NOT EXISTS post (
 );
 CREATE INDEX IF NOT EXISTS idx_uid        ON post(uid);
 CREATE INDEX IF NOT EXISTS idx_created_at ON post(created_at DESC) WHERE deleted_at IS NULL;
+
+-- ======== comment ========
+
+CREATE TABLE IF NOT EXISTS comment (
+    id BIGSERIAL PRIMARY KEY,
+    uid BIGINT NOT NULL,
+    content TEXT NOT NULL ,
+
+    root_post BIGINT NOT NULL ,
+    parent_comment BIGINT DEFAULT 0, -- 0表示一级评论
+    reply_uid BIGINT DEFAULT 0,-- 0表示未@，评论主体为一级评论
+
+    like_count BIGINT DEFAULT 0,-- 点赞数量
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    deleted_at TIMESTAMPTZ
+);
+-- 拉取某条帖子下的一级评论
+CREATE INDEX IF NOT EXISTS idx_parent_comment ON comment(root_post,created_at DESC )
+WHERE parent_comment = 0 AND deleted_at IS NULL;
+
+-- 拉取某个评论下的二级回复
+CREATE INDEX IF NOT EXISTS idx_children_comment ON comment(parent_comment,created_at ASC )
+WHERE deleted_at IS NULL;
+
+-- 拉取某个用户的评论历史
+CREATE INDEX IF NOT EXISTS idx_user_comment ON comment(uid,created_at DESC )
+WHERE deleted_at IS NULL;
+
+-- ======== like_post_comment ========
+CREATE TABLE IF NOT EXISTS "like" (
+    uid BIGINT NOT NULL,
+    target_id BIGINT NOT NULL, -- 对应类型的id
+    target_type SMALLINT NOT NULL, -- 1=帖子，2=评论
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (uid,target_id,target_type)
+);
+CREATE INDEX IF NOT EXISTS idx_target ON "like"(target_id,target_type);
 
 -- ======== user ========
 \c user

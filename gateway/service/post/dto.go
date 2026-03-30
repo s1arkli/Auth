@@ -37,4 +37,22 @@ type (
 	DetailReq struct {
 		PostId int64 `json:"postId" binding:"required,gt=0"`
 	}
+
+	CommentReq struct {
+		PostId   int64 `json:"postId" binding:"required,gt=0"`
+		Cursor   int64 `json:"cursor"`
+		PageSize int32 `json:"pageSize" binding:"required,gt=3"`
+	}
+
+	SetCommentReq struct {
+		PostId   int64  `json:"postId" binding:"required,gt=0"`
+		Content  string `json:"content" binding:"required,min=1,max=500"`
+		ParentId int64  `json:"parentId"`
+		ReplyUid int64  `json:"replyUid"`
+	}
+
+	LikeReq struct {
+		TargetId   int64 `json:"targetId" binding:"required,gt=0"`
+		TargetType int32 `json:"targetType" binding:"required,oneof=1 2"`
+	}
 )

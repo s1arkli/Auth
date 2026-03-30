@@ -12,6 +12,8 @@ message PostListReq {
 
   int32 post_type = 10;
   SortType sort = 11;
+
+  int64 uid = 20;
 }
 
 enum SortType {
@@ -38,6 +40,7 @@ message PostListItem {
   int32 collect_count = 21;
   int32 comment_count = 22;
   int32 view_count = 23;
+  bool is_liked = 24;
 
   bool is_topped = 30;
   int64 created_at = 39;
@@ -52,6 +55,7 @@ message PostCreateReq {
 
 message PostDetailReq {
   int64 post_id = 1;
+  int64 uid = 2;
 }
 
 message PostDetailResp {
@@ -64,10 +68,61 @@ message PostDetailResp {
   int32 like_count = 10;
   int32 collect_count = 11;
   int32 view_count = 13;
+  bool is_liked = 14;
+}
+
+message PostCommentReq {
+  int64 post_id = 1;
+  int64 cursor = 2;
+  int32 page_size = 3;
+  int64 uid = 4;
+}
+
+message PostCommentResp {
+  repeated ParentComment parent_comment = 1;
+  bool has_more = 2;
+}
+
+message ParentComment {
+  int64 comment_id = 1;
+  int64 uid = 2;
+  string content = 3;
+  repeated ChildrenComment children_comment = 4;
+  int64 reply_count = 5;
+  int64 created_at = 6;
+
+  bool is_liked = 10;
+}
+
+message ChildrenComment {
+  int64 comment_id = 1;
+  int64 uid = 2;
+  int64 reply_uid = 3;
+  string content = 4;
+  int64 created_at = 5;
+
+  bool is_liked = 10;
+}
+
+message SetCommentReq {
+  int64 post_id = 1;
+  int64 uid = 2;
+  string content = 3;
+  int64 parent_id = 4;
+  int64 reply_uid = 5;
+}
+
+message SetLikeReq {
+  int64 target_id = 1;
+  int32 target_type = 2;
+  int64 uid = 10;
 }
 
 service Post{
   rpc List(PostListReq) returns (PostListResp);
   rpc Create(PostCreateReq) returns (google.protobuf.Empty);
   rpc Detail(PostDetailReq) returns (PostDetailResp);
+  rpc GetPostComment(PostCommentReq) returns (PostCommentResp);
+  rpc SetComment(SetCommentReq) returns (google.protobuf.Empty);
+  rpc SetLikeComment(SetLikeReq) returns (google.protobuf.Empty);
 }

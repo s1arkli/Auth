@@ -1,3 +1,4 @@
+/** 负责渲染论坛首页，并管理帖子筛选、缓存、搜索和滚动加载。 */
 import {
   startTransition,
   useCallback,
@@ -42,6 +43,11 @@ interface ForumHomeProps {
   mapPostItem: (item: PostListItemDTO, topic: PostTopic) => PostFeedItem
 }
 
+/**
+ * @description 渲染论坛首页，根据游客态或登录态加载帖子流并提供筛选、搜索、发帖入口。
+ * @param props ForumHomeProps，论坛首页需要的状态输入、配置和交互回调。
+ * @returns React 论坛首页组件。
+ */
 export function ForumHome({
   mode,
   currentProfile,
@@ -72,6 +78,7 @@ export function ForumHome({
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [loadingMore, setLoadingMore] = useState(false)
+  // feedTransitionStage（帖子流切换动画状态）用于分类/排序切换时做出场和入场过渡。
   const [feedTransitionStage, setFeedTransitionStage] = useState<'idle' | 'leaving' | 'entering'>('idle')
   const [loadError, setLoadError] = useState('')
   const [reloadSeed, setReloadSeed] = useState(0)
@@ -121,6 +128,11 @@ export function ForumHome({
     return `${nextTopic}:${nextSortMode}`
   }
 
+  /**
+   * @description 拉取指定页码的帖子数据，并映射成页面消费的缓存结构。
+   * @param pageNumber number，当前要加载的页码。
+   * @returns Promise<FeedCacheEntry>，可直接写入缓存和列表状态的结果。
+   */
   const fetchFeedPage = useCallback(
     async (pageNumber: number) => {
       const resp = await fetchPostList({
@@ -175,6 +187,7 @@ export function ForumHome({
           return
         }
 
+        // 帖子列表切换涉及较多节点更新，放进 transition（过渡）里可以减少交互卡顿感。
         startTransition(() => {
           setPosts(entry.posts)
           setTotal(entry.total)
@@ -210,6 +223,7 @@ export function ForumHome({
         let nextEntry: FeedCacheEntry
 
         if (cachedEntry && !isManualReload) {
+          // 相同筛选条件优先命中缓存，避免用户来回切 tab（标签）时重复请求。
           nextEntry = cachedEntry
         } else {
           nextEntry = await fetchFeedPage(1)
@@ -320,6 +334,7 @@ export function ForumHome({
           hasMore: nextEntry.hasMore,
         }
 
+        // 分页结果也回写缓存，保证切换分类后再切回来时仍能保留用户已经滚到的位置。
         postCacheRef.current.set(cacheKey, mergedEntry)
         startTransition(() => {
           setPosts(mergedEntry.posts)
@@ -417,11 +432,17 @@ export function ForumHome({
       return posts
     }
 
+    // 搜索仅在已加载的帖子里做前端过滤，避免把临时关键字输入放大成额外接口压力。
     return posts.filter((post) => {
       return post.title.toLowerCase().includes(search) || post.excerpt.toLowerCase().includes(search)
     })
   }, [posts, searchKeyword])
 
+  /**
+   * @description 提交当前搜索关键字，并记录一次搜索行为日志。
+   * @param event FormEvent<HTMLFormElement>，搜索表单提交事件。
+   * @returns void
+   */
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
@@ -436,6 +457,11 @@ export function ForumHome({
     })
   }
 
+  /**
+   * @description 打开帖子详情页，并记录当前点击的帖子上下文。
+   * @param post PostFeedItem，用户点击的帖子卡片数据。
+   * @returns void
+   */
   function handleOpenPostDetail(post: PostFeedItem) {
     appLogger.log({
       level: 'info',

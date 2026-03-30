@@ -1,3 +1,4 @@
+/** 负责提供头像裁剪弹窗并输出用户确认后的头像文件。 */
 import { useCallback, useMemo, useState } from 'react'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import 'react-easy-crop/react-easy-crop.css'
@@ -14,6 +15,11 @@ interface AvatarCropModalProps {
 
 const initialCrop: Point = { x: 0, y: 0 }
 
+/**
+ * @description 渲染头像裁剪弹窗，并在用户确认后输出裁剪完成的头像文件。
+ * @param props AvatarCropModalProps，裁剪弹窗所需的图片地址、文件名和交互回调。
+ * @returns React 头像裁剪弹窗组件。
+ */
 export function AvatarCropModal({
   fileName,
   imageSrc,
@@ -23,6 +29,7 @@ export function AvatarCropModal({
 }: AvatarCropModalProps) {
   const [crop, setCrop] = useState<Point>(initialCrop)
   const [zoom, setZoom] = useState(1)
+  // croppedAreaPixels（裁剪像素区域）是最终导出头像时唯一可信的裁剪依据。
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const zoomLabel = useMemo(() => `${zoom.toFixed(1)}x`, [zoom])

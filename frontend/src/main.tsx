@@ -1,3 +1,4 @@
+/** 负责挂载 React 应用并加载全局样式。 */
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from '@/app/App'

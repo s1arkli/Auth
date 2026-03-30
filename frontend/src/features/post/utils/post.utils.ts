@@ -1,3 +1,4 @@
+/** 负责把后端帖子 DTO（数据传输对象）转换成前端展示数据。 */
 import type { PostFeedItem, PostSortMode, PostTopic } from '@/features/post'
 import type { PostListItemDTO } from '@/types/api'
 
@@ -6,6 +7,11 @@ const shortDateFormatter = new Intl.DateTimeFormat('zh-CN', {
   day: 'numeric',
 })
 
+/**
+ * @description 把点赞、浏览等大数字压缩成论坛卡片更容易扫读的展示格式。
+ * @param value number，原始统计值。
+ * @returns string，适合直接展示的短格式字符串。
+ */
 export function formatCount(value: number) {
   if (value >= 1000) {
     return `${(value / 1000).toFixed(value >= 10000 ? 0 : 1)}k`
@@ -14,6 +20,11 @@ export function formatCount(value: number) {
   return String(value)
 }
 
+/**
+ * @description 把 Unix 时间戳转换成“刚刚”“3 小时前”这类相对时间。
+ * @param unixSeconds number，秒级 Unix 时间戳。
+ * @returns string，适合帖子卡片展示的时间文案。
+ */
 export function formatRelativeTime(unixSeconds: number) {
   if (!unixSeconds) {
     return '刚刚'
@@ -40,6 +51,11 @@ export function formatRelativeTime(unixSeconds: number) {
   return shortDateFormatter.format(new Date(unixSeconds * 1000))
 }
 
+/**
+ * @description 把论坛分类映射成后端约定的帖子类型编号。
+ * @param topic PostTopic，前端使用的帖子分类。
+ * @returns number，对应后端接口的 postType（帖子类型）值。
+ */
 export function getPostTypeByTopic(topic: PostTopic) {
   if (topic === 'tech') {
     return 1
@@ -53,6 +69,11 @@ export function getPostTypeByTopic(topic: PostTopic) {
   return 0
 }
 
+/**
+ * @description 把前端排序模式映射成后端接口使用的排序编号。
+ * @param sortMode PostSortMode，前端排序模式。
+ * @returns number，后端接口约定的排序值。
+ */
 export function getSortValue(sortMode: PostSortMode) {
   if (sortMode === 'hot') {
     return 1
@@ -60,6 +81,12 @@ export function getSortValue(sortMode: PostSortMode) {
   return 2
 }
 
+/**
+ * @description 把帖子列表接口返回的 DTO（数据传输对象）转换成论坛卡片使用的视图数据。
+ * @param item PostListItemDTO，后端返回的单条帖子数据。
+ * @param topic PostTopic，当前列表筛选的分类。
+ * @returns PostFeedItem，供列表页面直接渲染的帖子卡片数据。
+ */
 export function mapPostItem(item: PostListItemDTO, topic: PostTopic): PostFeedItem {
   const postId = item.postId ?? item.post_id ?? 0
   const createdAt = item.createdAt ?? item.created_at ?? 0
