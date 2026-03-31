@@ -18,9 +18,9 @@ type Comment struct {
 	UID           int64          `gorm:"column:uid;not null" json:"uid"`
 	Content       string         `gorm:"column:content;not null" json:"content"`
 	RootPost      int64          `gorm:"column:root_post;not null" json:"root_post"`
-	ParentComment *int64         `gorm:"column:parent_comment" json:"parent_comment"`
-	ReplyUID      *int64         `gorm:"column:reply_uid" json:"reply_uid"`
-	LikeCount     *int64         `gorm:"column:like_count" json:"like_count"`
+	ParentComment int64          `gorm:"column:parent_comment;not null" json:"parent_comment"`
+	ReplyUID      int64          `gorm:"column:reply_uid;not null" json:"reply_uid"`
+	LikeCount     int64          `gorm:"column:like_count;not null" json:"like_count"`
 	CreatedAt     time.Time      `gorm:"column:created_at;not null;default:now()" json:"created_at"`
 	UpdatedAt     time.Time      `gorm:"column:updated_at;not null;default:now()" json:"updated_at"`
 	DeletedAt     gorm.DeletedAt `gorm:"column:deleted_at" json:"deleted_at"`

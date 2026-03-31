@@ -688,7 +688,7 @@ export function PostDetailPage({
               <div className="forum-state-panel forum-state-panel--error">
                 <p>{detailError}</p>
                 {detailError.includes('token is null') ? (
-                  <p className="detail-hint">后端当前把详情接口拦成了需要登录，请检查详情路由或鉴权中间件配置。</p>
+                  <p className="detail-hint">请先登录后再查看帖子详情。</p>
                 ) : null}
                 <button className="forum-pill-button forum-pill-button--ghost" onClick={onBack} type="button">
                   返回帖子页
@@ -783,7 +783,7 @@ export function PostDetailPage({
                   <div className="detail-section-head">
                     <div>
                       <h2>评论 {formatCount(pageData.post.stats.comments)}</h2>
-                      <p>{commentError ? '评论接口已接通，但这次请求失败了。' : '热评优先展示，以下内容按接口返回顺序渲染。'}</p>
+                      <p>{commentError ? '评论加载失败，请稍后重试。' : '按热度排序展示评论。'}</p>
                     </div>
                     <span className="detail-section-tag">
                       {pageData.commentsHasMore ? '还有更多' : '已加载完成'}
@@ -892,7 +892,7 @@ export function PostDetailPage({
                       />
                       <div>
                         <strong>{currentProfile?.nickname || '游客用户'}</strong>
-                        <span>{currentProfile ? '评论和点赞接口都已接通，可以直接联调。' : '登录后可参与评论和点赞。'}</span>
+                        <span>{currentProfile ? '分享你的想法…' : '登录后可参与评论和点赞。'}</span>
                       </div>
                     </div>
 

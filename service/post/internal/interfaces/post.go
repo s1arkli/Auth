@@ -61,7 +61,10 @@ func (p *Post) List(ctx context.Context, req *pb.PostListReq) (*pb.PostListResp,
 }
 
 func (p *Post) Create(ctx context.Context, req *pb.PostCreateReq) (*emptypb.Empty, error) {
-	return &emptypb.Empty{}, status.Error(1, p.post.Create(ctx, req).Error())
+	if err := p.post.Create(ctx, req); err != nil {
+		return &emptypb.Empty{}, status.Error(1, err.Error())
+	}
+	return &emptypb.Empty{}, nil
 }
 
 func (p *Post) Detail(ctx context.Context, req *pb.PostDetailReq) (*pb.PostDetailResp, error) {

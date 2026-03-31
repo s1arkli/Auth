@@ -211,7 +211,7 @@ export function ProfilePage({
           <form className="profile-card" onSubmit={handleSubmit}>
             <div className="profile-card__heading">
               <h2>个人中心</h2>
-              <p>头像和昵称都放在这里修改，界面只保留最需要的部分。</p>
+              <p>管理你的头像和昵称</p>
             </div>
 
             <div className="profile-card__center">

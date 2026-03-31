@@ -45,10 +45,10 @@ CREATE TABLE IF NOT EXISTS comment (
     content TEXT NOT NULL ,
 
     root_post BIGINT NOT NULL ,
-    parent_comment BIGINT DEFAULT 0, -- 0表示一级评论
-    reply_uid BIGINT DEFAULT 0,-- 0表示未@，评论主体为一级评论
+    parent_comment BIGINT NOT NULL DEFAULT 0, -- 0表示一级评论
+    reply_uid BIGINT NOT NULL DEFAULT 0,-- 0表示未@，评论主体为一级评论
 
-    like_count BIGINT DEFAULT 0,-- 点赞数量
+    like_count BIGINT NOT NULL DEFAULT 0,-- 点赞数量
 
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),

@@ -62,10 +62,10 @@ func (c *Comment) CreateComment(ctx context.Context, postID, uid int64, content 
 		RootPost: postID,
 	}
 	if parentID > 0 {
-		comment.ParentComment = &parentID
+		comment.ParentComment = parentID
 	}
 	if replyUID > 0 {
-		comment.ReplyUID = &replyUID
+		comment.ReplyUID = replyUID
 	}
 
 	err := cDal.WithContext(ctx).Create(comment)

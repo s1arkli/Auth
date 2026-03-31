@@ -129,8 +129,7 @@ export function AuthCard({
 
             {mode === 'login' ? (
               <div className="meta-row">
-                <span>登录成功后会进入真实帖子页</span>
-                <span className="meta-row__link">当前不在页面层读取 refresh token</span>
+                <span>登录后即可发帖、评论和点赞</span>
               </div>
             ) : (
               <label className="agreement">

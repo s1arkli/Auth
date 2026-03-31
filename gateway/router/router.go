@@ -48,9 +48,11 @@ func Api(r *gin.Engine) {
 		p.POST("/list", service.List)
 		p.POST("/detail", service.Detail)
 		p.POST("/comment", service.Comment)
-		p.POST("/comment/create", service.SetComment).Use(middleware.Auth())
-		p.POST("/like", service.Like).Use(middleware.Auth())
-		p.POST("/create", service.Create).Use(middleware.Auth())
+
+		p.Use(middleware.Auth())
+		p.POST("/comment/create", service.SetComment)
+		p.POST("/like", service.Like)
+		p.POST("/create", service.Create)
 	}
 
 	{

@@ -23,12 +23,12 @@ func Auth() gin.HandlerFunc {
 
 		claims, err := jwt.ParseToken(tokenStr)
 		if err != nil || claims == nil {
-			response.Fail(c, ecode.New(1, "token is invalid"))
+			response.Fail(c, ecode.New(1, "请先登录"))
 			c.Abort()
 			return
 		}
 		if claims.TokenType != jwt.AccessToken {
-			response.Fail(c, ecode.New(1, "token is invalid"))
+			response.Fail(c, ecode.New(1, "请先登录"))
 			c.Abort()
 			return
 		}

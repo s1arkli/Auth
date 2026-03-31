@@ -29,19 +29,21 @@ func (p *Post) GetPostComment(ctx context.Context, req *pb.PostCommentReq) (*pb.
 
 	parentCmt := make([]*model.Comment, 0)
 	parentIds := make([]int64, 0)
-	parentCmt, err := p.comment.GetParentComment(ctx, req.PostId, req.Cursor, hotIds, int(req.PageSize+1))
-	if err != nil {
-		return res, status.Error(codes.Internal, err.Error())
-	}
-	if len(parentCmt) == 0 {
-		return res, nil
-	}
-	if int(req.PageSize) < len(parentCmt) {
-		res.HasMore = true
-		parentCmt = parentCmt[:req.PageSize]
-	}
-	for _, comment := range parentCmt {
-		parentIds = append(parentIds, comment.ID)
+	if len(hotCmt) > 3 {
+		parentCmt, err := p.comment.GetParentComment(ctx, req.PostId, req.Cursor, hotIds, int(req.PageSize+1))
+		if err != nil {
+			return res, status.Error(codes.Internal, err.Error())
+		}
+		if len(parentCmt) == 0 {
+			return res, nil
+		}
+		if int(req.PageSize) < len(parentCmt) {
+			res.HasMore = true
+			parentCmt = parentCmt[:req.PageSize]
+		}
+		for _, comment := range parentCmt {
+			parentIds = append(parentIds, comment.ID)
+		}
 	}
 
 	childCmts, err := p.comment.GetChildrenComment(ctx, append(hotIds, parentIds...))
@@ -50,7 +52,7 @@ func (p *Post) GetPostComment(ctx context.Context, req *pb.PostCommentReq) (*pb.
 	}
 	childMap := make(map[int64][]*model.Comment)
 	for _, child := range childCmts {
-		childMap[*child.ParentComment] = append(childMap[*child.ParentComment], child)
+		childMap[child.ParentComment] = append(childMap[child.ParentComment], child)
 	}
 
 	// 收集所有评论ID，批量查询是否点赞
@@ -75,7 +77,7 @@ func (p *Post) GetPostComment(ctx context.Context, req *pb.PostCommentReq) (*pb.
 			pc.ChildrenComment = append(pc.ChildrenComment, &pb.ChildrenComment{
 				CommentId: child.ID,
 				Uid:       child.UID,
-				ReplyUid:  *child.ReplyUID,
+				ReplyUid:  child.ReplyUID,
 				Content:   child.Content,
 				CreatedAt: child.CreatedAt.Unix(),
 				IsLiked:   likedMap[child.ID],
