@@ -19,4 +19,4 @@ minio:
   secret_key: "admin123456"
   external_url: "http://localhost:10000"
 jwt:
-  secret_key: a3f1b7c9e2d4f6a8b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3
+  secret_key: a3f1b7c2e2d9f6a8b0c1d2e3f4a5b6c7d8e9f1a1b3c3d4e5f6a7b8c9d0e1f2a3
