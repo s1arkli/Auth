@@ -2,9 +2,9 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-package grpc.proto.auth;
+package mono.auth;
 
-option go_package = "mono/pb";
+option go_package = "mono/pb/auth";
 
 message RegisterReq {
   string account = 1;
