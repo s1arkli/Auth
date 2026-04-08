@@ -70,6 +70,13 @@ func Api(r *gin.Engine) {
 	}
 
 	{
+		//文件系统
+		ui := v1.Group("/node")
+		ui.Use(middleware.Auth())
+		ui.POST("")
+	}
+
+	{
 		//资源上传
 		service := resource.NewService()
 

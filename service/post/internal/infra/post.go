@@ -7,7 +7,7 @@ import (
 	"gorm.io/gen/field"
 	"gorm.io/gorm"
 
-	"mono/pb"
+	"mono/pb/post"
 	"mono/service/post/internal/infra/dal"
 	"mono/service/post/internal/infra/model"
 )
@@ -22,7 +22,7 @@ func NewPost(db *gorm.DB) *Post {
 	}
 }
 
-func (p *Post) List(ctx context.Context, req *pb.PostListReq) ([]*model.Post, int64, error) {
+func (p *Post) List(ctx context.Context, req *post.PostListReq) ([]*model.Post, int64, error) {
 	pDal := dal.Use(p.db).Post
 
 	query := pDal.WithContext(ctx)
@@ -45,18 +45,18 @@ func (p *Post) List(ctx context.Context, req *pb.PostListReq) ([]*model.Post, in
 	return data, count, nil
 }
 
-func getOrderExpr(db *gorm.DB, order pb.SortType) field.Expr {
+func getOrderExpr(db *gorm.DB, order post.SortType) field.Expr {
 	pDal := dal.Use(db).Post
 
-	orderMap := map[pb.SortType]field.Expr{
-		pb.SortType_SORT_TYPE_DEFAULT: pDal.CreatedAt.Desc(),
-		pb.SortType_SORT_TYPE_HOT:     pDal.ViewCount.Desc(),
-		pb.SortType_SORT_TYPE_NEW:     pDal.CreatedAt.Desc(),
+	orderMap := map[post.SortType]field.Expr{
+		post.SortType_SORT_TYPE_DEFAULT: pDal.CreatedAt.Desc(),
+		post.SortType_SORT_TYPE_HOT:     pDal.ViewCount.Desc(),
+		post.SortType_SORT_TYPE_NEW:     pDal.CreatedAt.Desc(),
 	}
 	return orderMap[order]
 }
 
-func (p *Post) Create(ctx context.Context, req *pb.PostCreateReq) error {
+func (p *Post) Create(ctx context.Context, req *post.PostCreateReq) error {
 	pDal := dal.Use(p.db).Post
 
 	return pDal.WithContext(ctx).Create(&model.Post{
@@ -67,7 +67,7 @@ func (p *Post) Create(ctx context.Context, req *pb.PostCreateReq) error {
 	})
 }
 
-func (p *Post) Detail(ctx context.Context, req *pb.PostDetailReq) (*model.Post, error) {
+func (p *Post) Detail(ctx context.Context, req *post.PostDetailReq) (*model.Post, error) {
 	pDal := dal.Use(p.db).Post
 
 	data, err := pDal.WithContext(ctx).Where(pDal.ID.Eq(req.PostId)).First()

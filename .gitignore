@@ -1,3 +1,10 @@
 .idea/
 .claude
 /config/
+gitignorenode_modules/
+.venv/
+__pycache__/
+.DS_Store
+*.pyc
+dist/
+.env.local

@@ -7,13 +7,6 @@ proto:
 doc:
 	swag init --dir ./gateway/service -g doc.go --parseDependency --output ./gateway/doc/app
 
-auth_dal:
-	go run service/auth/main.go dal
-post_dal:
-	go run service/post/main.go dal
-user_dal:
-	go run service/user/main.go dal
-
 run: proto doc
 	docker-compose up
 
@@ -31,3 +24,9 @@ dev: proto doc
 	go run ./service/auth main.go rpc
 	go run ./service/post main.go rpc
 	go run ./service/user main.go rpc
+
+new_service:
+	python3 scripts/new_service.py $(module)
+
+dal:
+	go run service/$(module)/main.go dal

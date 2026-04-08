@@ -9,7 +9,6 @@ package node
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -23,7 +22,56 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 获取某个节点下的文件，parent_id=null即为根节点
+type NodeType int32
+
+const (
+	NodeType_NODE_TYPE_UNSPECIFIED NodeType = 0
+	NodeType_NODE_TYPE_FOLDER      NodeType = 1
+	NodeType_NODE_TYPE_NOTE        NodeType = 2
+)
+
+// Enum value maps for NodeType.
+var (
+	NodeType_name = map[int32]string{
+		0: "NODE_TYPE_UNSPECIFIED",
+		1: "NODE_TYPE_FOLDER",
+		2: "NODE_TYPE_NOTE",
+	}
+	NodeType_value = map[string]int32{
+		"NODE_TYPE_UNSPECIFIED": 0,
+		"NODE_TYPE_FOLDER":      1,
+		"NODE_TYPE_NOTE":        2,
+	}
+)
+
+func (x NodeType) Enum() *NodeType {
+	p := new(NodeType)
+	*p = x
+	return p
+}
+
+func (x NodeType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (NodeType) Descriptor() protoreflect.EnumDescriptor {
+	return file_node_proto_enumTypes[0].Descriptor()
+}
+
+func (NodeType) Type() protoreflect.EnumType {
+	return &file_node_proto_enumTypes[0]
+}
+
+func (x NodeType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use NodeType.Descriptor instead.
+func (NodeType) EnumDescriptor() ([]byte, []int) {
+	return file_node_proto_rawDescGZIP(), []int{0}
+}
+
+// ListNode 获取某个节点下的文件，parent_id=null即为根节点
 type ListNodeReq struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Uid           int64                  `protobuf:"varint,1,opt,name=uid,proto3" json:"uid,omitempty"`
@@ -124,13 +172,12 @@ type NodeItem struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Uid           int64                  `protobuf:"varint,2,opt,name=uid,proto3" json:"uid,omitempty"`
-	Type          int32                  `protobuf:"varint,3,opt,name=type,proto3" json:"type,omitempty"` // 1= folder 2= note
+	Type          NodeType               `protobuf:"varint,3,opt,name=type,proto3,enum=mono.node.NodeType" json:"type,omitempty"` // 1= folder 2= note
 	ParentId      *int64                 `protobuf:"varint,4,opt,name=parent_id,json=parentId,proto3,oneof" json:"parent_id,omitempty"`
 	Title         string                 `protobuf:"bytes,5,opt,name=title,proto3" json:"title,omitempty"`
-	Content       string                 `protobuf:"bytes,6,opt,name=content,proto3" json:"content,omitempty"`
-	Path          string                 `protobuf:"bytes,7,opt,name=path,proto3" json:"path,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	Sort          int32                  `protobuf:"varint,8,opt,name=sort,proto3" json:"sort,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -179,11 +226,11 @@ func (x *NodeItem) GetUid() int64 {
 	return 0
 }
 
-func (x *NodeItem) GetType() int32 {
+func (x *NodeItem) GetType() NodeType {
 	if x != nil {
 		return x.Type
 	}
-	return 0
+	return NodeType_NODE_TYPE_UNSPECIFIED
 }
 
 func (x *NodeItem) GetParentId() int64 {
@@ -196,20 +243,6 @@ func (x *NodeItem) GetParentId() int64 {
 func (x *NodeItem) GetTitle() string {
 	if x != nil {
 		return x.Title
-	}
-	return ""
-}
-
-func (x *NodeItem) GetContent() string {
-	if x != nil {
-		return x.Content
-	}
-	return ""
-}
-
-func (x *NodeItem) GetPath() string {
-	if x != nil {
-		return x.Path
 	}
 	return ""
 }
@@ -228,33 +261,45 @@ func (x *NodeItem) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *NodeItem) GetSort() int32 {
+	if x != nil {
+		return x.Sort
+	}
+	return 0
+}
+
 var File_node_proto protoreflect.FileDescriptor
 
 const file_node_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
-	"node.proto\x12\tmono.node\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"O\n" +
+	"node.proto\x12\tmono.node\x1a\x1fgoogle/protobuf/timestamp.proto\"O\n" +
 	"\vListNodeReq\x12\x10\n" +
 	"\x03uid\x18\x01 \x01(\x03R\x03uid\x12 \n" +
 	"\tparent_id\x18\x02 \x01(\x03H\x00R\bparentId\x88\x01\x01B\f\n" +
 	"\n" +
 	"_parent_id\"7\n" +
 	"\fListNodeResp\x12'\n" +
-	"\x04list\x18\x01 \x03(\v2\x13.mono.node.NodeItemR\x04list\"\xaa\x02\n" +
+	"\x04list\x18\x01 \x03(\v2\x13.mono.node.NodeItemR\x04list\"\xa5\x02\n" +
 	"\bNodeItem\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x10\n" +
-	"\x03uid\x18\x02 \x01(\x03R\x03uid\x12\x12\n" +
-	"\x04type\x18\x03 \x01(\x05R\x04type\x12 \n" +
+	"\x03uid\x18\x02 \x01(\x03R\x03uid\x12'\n" +
+	"\x04type\x18\x03 \x01(\x0e2\x13.mono.node.NodeTypeR\x04type\x12 \n" +
 	"\tparent_id\x18\x04 \x01(\x03H\x00R\bparentId\x88\x01\x01\x12\x14\n" +
-	"\x05title\x18\x05 \x01(\tR\x05title\x12\x18\n" +
-	"\acontent\x18\x06 \x01(\tR\acontent\x12\x12\n" +
-	"\x04path\x18\a \x01(\tR\x04path\x129\n" +
+	"\x05title\x18\x05 \x01(\tR\x05title\x129\n" +
 	"\n" +
-	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAtB\f\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x12\n" +
+	"\x04sort\x18\b \x01(\x05R\x04sortB\f\n" +
 	"\n" +
-	"_parent_idB\x0eZ\fmono/pb/nodeb\x06proto3"
+	"_parent_id*O\n" +
+	"\bNodeType\x12\x19\n" +
+	"\x15NODE_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10NODE_TYPE_FOLDER\x10\x01\x12\x12\n" +
+	"\x0eNODE_TYPE_NOTE\x10\x022C\n" +
+	"\x04Node\x12;\n" +
+	"\bListNode\x12\x16.mono.node.ListNodeReq\x1a\x17.mono.node.ListNodeRespB\x0eZ\fmono/pb/nodeb\x06proto3"
 
 var (
 	file_node_proto_rawDescOnce sync.Once
@@ -268,22 +313,27 @@ func file_node_proto_rawDescGZIP() []byte {
 	return file_node_proto_rawDescData
 }
 
+var file_node_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_node_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_node_proto_goTypes = []any{
-	(*ListNodeReq)(nil),           // 0: mono.node.ListNodeReq
-	(*ListNodeResp)(nil),          // 1: mono.node.ListNodeResp
-	(*NodeItem)(nil),              // 2: mono.node.NodeItem
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(NodeType)(0),                 // 0: mono.node.NodeType
+	(*ListNodeReq)(nil),           // 1: mono.node.ListNodeReq
+	(*ListNodeResp)(nil),          // 2: mono.node.ListNodeResp
+	(*NodeItem)(nil),              // 3: mono.node.NodeItem
+	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
 }
 var file_node_proto_depIdxs = []int32{
-	2, // 0: mono.node.ListNodeResp.list:type_name -> mono.node.NodeItem
-	3, // 1: mono.node.NodeItem.created_at:type_name -> google.protobuf.Timestamp
-	3, // 2: mono.node.NodeItem.updated_at:type_name -> google.protobuf.Timestamp
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	3, // 0: mono.node.ListNodeResp.list:type_name -> mono.node.NodeItem
+	0, // 1: mono.node.NodeItem.type:type_name -> mono.node.NodeType
+	4, // 2: mono.node.NodeItem.created_at:type_name -> google.protobuf.Timestamp
+	4, // 3: mono.node.NodeItem.updated_at:type_name -> google.protobuf.Timestamp
+	1, // 4: mono.node.Node.ListNode:input_type -> mono.node.ListNodeReq
+	2, // 5: mono.node.Node.ListNode:output_type -> mono.node.ListNodeResp
+	5, // [5:6] is the sub-list for method output_type
+	4, // [4:5] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_node_proto_init() }
@@ -298,13 +348,14 @@ func file_node_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_node_proto_rawDesc), len(file_node_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   3,
 			NumExtensions: 0,
-			NumServices:   0,
+			NumServices:   1,
 		},
 		GoTypes:           file_node_proto_goTypes,
 		DependencyIndexes: file_node_proto_depIdxs,
+		EnumInfos:         file_node_proto_enumTypes,
 		MessageInfos:      file_node_proto_msgTypes,
 	}.Build()
 	File_node_proto = out.File

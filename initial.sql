@@ -104,3 +104,4 @@ CREATE TABLE IF NOT EXISTS node (
 );
 CREATE INDEX IF NOT EXISTS idx_user_node ON node(uid,parent_id);
 CREATE INDEX idx_node_uid_path ON node(uid, path varchar_pattern_ops) WHERE deleted_at IS NULL;
+COMMENT ON COLUMN node.type IS '1= folder 2= note';
