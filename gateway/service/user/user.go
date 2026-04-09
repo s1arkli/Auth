@@ -11,13 +11,11 @@ import (
 
 type Service struct {
 	user user.UserClient
-	conn *grpc.ClientConn
 }
 
 func NewService(conn *grpc.ClientConn) *Service {
 	return &Service{
 		user: user.NewUserClient(conn),
-		conn: conn,
 	}
 }
 

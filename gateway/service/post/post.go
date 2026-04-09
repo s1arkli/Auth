@@ -12,13 +12,11 @@ import (
 
 type Service struct {
 	post post.PostClient
-	conn *grpc.ClientConn
 }
 
 func NewService(conn *grpc.ClientConn) *Service {
 	return &Service{
 		post: post.NewPostClient(conn),
-		conn: conn,
 	}
 }
 

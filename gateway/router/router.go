@@ -8,12 +8,14 @@ import (
 	_ "mono/gateway/doc/app" // 必须匿名导入生成的 docs 包
 	"mono/gateway/grpc"
 	"mono/gateway/service/auth"
+	nodeService "mono/gateway/service/node"
 	"mono/gateway/service/post"
 	"mono/gateway/service/resource"
 	"mono/gateway/service/user"
 	"mono/gateway/service/voice"
 	"mono/pkg/middleware"
 	authPkg "mono/service/auth/pkg"
+	nodePkg "mono/service/node/pkg"
 	postPkg "mono/service/post/pkg"
 	userPkg "mono/service/user/pkg"
 )
@@ -71,9 +73,18 @@ func Api(r *gin.Engine) {
 
 	{
 		//文件系统
+		conn, err := grpc.GetConn(nodePkg.Module)
+		if err != nil {
+			panic(err)
+		}
+		service := nodeService.NewService(conn)
+
 		ui := v1.Group("/node")
 		ui.Use(middleware.Auth())
-		ui.POST("")
+		ui.POST("/list", service.ListNodes)
+		ui.POST("/create", service.Create)
+		ui.POST("/update", service.Update)
+		ui.POST("/delete", service.Delete)
 	}
 
 	{
