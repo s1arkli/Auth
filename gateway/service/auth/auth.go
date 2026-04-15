@@ -83,6 +83,7 @@ func (s *Service) Login(c *gin.Context) {
 		Uid:         resp.Uid,
 		Nickname:    resp.Nickname,
 		Avatar:      resp.Avatar,
+		IsAdmin:     resp.IsAdmin,
 	})
 }
 

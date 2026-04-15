@@ -32,6 +32,7 @@ message LoginResp {
   int64 uid = 10;
   string avatar = 11;
   string nickname = 12;
+  bool is_admin = 13;
 }
 
 message RefreshReq {

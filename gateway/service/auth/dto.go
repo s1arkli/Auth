@@ -16,5 +16,6 @@ type (
 		Uid         int64  `json:"uid"`
 		Nickname    string `json:"nickname"`
 		Avatar      string `json:"avatar"`
+		IsAdmin     bool   `json:"isAdmin"`
 	}
 )

@@ -149,6 +149,7 @@ type LoginResp struct {
 	Uid           int64                  `protobuf:"varint,10,opt,name=uid,proto3" json:"uid,omitempty"`
 	Avatar        string                 `protobuf:"bytes,11,opt,name=avatar,proto3" json:"avatar,omitempty"`
 	Nickname      string                 `protobuf:"bytes,12,opt,name=nickname,proto3" json:"nickname,omitempty"`
+	IsAdmin       bool                   `protobuf:"varint,13,opt,name=is_admin,json=isAdmin,proto3" json:"is_admin,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -216,6 +217,13 @@ func (x *LoginResp) GetNickname() string {
 		return x.Nickname
 	}
 	return ""
+}
+
+func (x *LoginResp) GetIsAdmin() bool {
+	if x != nil {
+		return x.IsAdmin
+	}
+	return false
 }
 
 type RefreshReq struct {
@@ -328,14 +336,15 @@ const file_auth_proto_rawDesc = "" +
 	"\x06avatar\x18\v \x01(\tR\x06avatar\"@\n" +
 	"\bLoginReq\x12\x18\n" +
 	"\aaccount\x18\x01 \x01(\tR\aaccount\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"\x99\x01\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"\xb4\x01\n" +
 	"\tLoginResp\x12!\n" +
 	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
 	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\x12\x10\n" +
 	"\x03uid\x18\n" +
 	" \x01(\x03R\x03uid\x12\x16\n" +
 	"\x06avatar\x18\v \x01(\tR\x06avatar\x12\x1a\n" +
-	"\bnickname\x18\f \x01(\tR\bnickname\"1\n" +
+	"\bnickname\x18\f \x01(\tR\bnickname\x12\x19\n" +
+	"\bis_admin\x18\r \x01(\bR\aisAdmin\"1\n" +
 	"\n" +
 	"RefreshReq\x12#\n" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"U\n" +

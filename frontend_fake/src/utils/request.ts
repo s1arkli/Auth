@@ -1,10 +1,26 @@
 const BASE_URL = "/api/v1";
 
-async function request<T>(url: string,options?:RequestInit): Promise<T> {
-    const res = await fetch(BASE_URL + url,{
+interface apiResponse<T> {
+    code: number;
+    msg: string;
+    data: T;
+}
+
+class BizError extends Error {
+    code: number;
+
+    constructor(code: number, msg: string) {
+        super(msg);
+        this.code = code;
+    }
+}
+
+async function request<T>(url: string, options?: RequestInit): Promise<T> {
+    //await 响应头
+    const res = await fetch(BASE_URL + url, {
         ...options,
-        headers:{
-            "Content-Type":"application/json",
+        headers: {
+            "Content-Type": "application/json",
             // 需要鉴权就在这里统一带 token
             // "Authorization": `Bearer ${getToken()}`,
             ...options?.headers,
@@ -15,26 +31,26 @@ async function request<T>(url: string,options?:RequestInit): Promise<T> {
         throw new Error(`请求失败: ${res.status}`);
     }
 
-    return res.json() as Promise<T>;
+    const json = await res.json() as apiResponse<T>;
+
+    if (json.code != 200) {
+        throw new BizError(json.code, json.msg);
+    }
+
+    return json.data;
 }
 
 export const http = {
-    get<T>(url: string) {
-        return request<T>(url);
-    },
-    post<T>(url: string, data: unknown) {
+    post: function <T>(url: string, data: unknown): Promise<T> {
         return request<T>(url, {
             method: "POST",
             body: JSON.stringify(data),
         });
     },
-    put<T>(url: string, data: unknown) {
+    delete: function <T>(url: string, data: unknown): Promise<T> {
         return request<T>(url, {
-            method: "PUT",
+            method: "DELETE",
             body: JSON.stringify(data),
         });
-    },
-    delete<T>(url: string) {
-        return request<T>(url, { method: "DELETE" });
     },
 };
