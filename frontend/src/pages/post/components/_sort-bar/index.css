@@ -1,0 +1,35 @@
+.post-sort-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.post-sort-bar__button {
+    padding: 10px 16px;
+    border: 1px solid #e7ded3;
+    border-radius: 999px;
+    background: #fffdf9;
+    color: #8e7768;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.post-sort-bar__button--active {
+    border-color: transparent;
+    background: #efe6db;
+    color: #43342a;
+    font-weight: 600;
+}
+
+.post-sort-bar__button:hover {
+    color: #43342a;
+    border-color: #d8cbbd;
+}
+
+.post-sort-bar__button--active:hover {
+    border-color: transparent;
+}

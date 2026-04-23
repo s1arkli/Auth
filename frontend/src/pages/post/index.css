@@ -1,6 +1,14 @@
 .post-page {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     padding: 28px 120px 40px;
     box-sizing: border-box;
+}
+
+.post-page__toolbar {
+    display: flex;
+    align-items: center;
 }
 
 .post-page__feed {

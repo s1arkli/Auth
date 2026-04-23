@@ -55,7 +55,7 @@ func (s *Service) List(c *gin.Context) {
 		response.Fail(c, ecode.New(1, msg))
 		return
 	}
-	response.Success(c, resp)
+	response.Success(c, listRespFromPB(resp))
 }
 
 // Create 创建帖子

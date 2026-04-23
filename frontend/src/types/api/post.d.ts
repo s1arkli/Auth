@@ -1,9 +1,11 @@
+import type {PostSortValue, PostTypeValue} from "../../constants/post";
+
 /** 帖子列表请求参数，对应后端 ListReq。 */
 export interface ListReq {
-    page: number;
-    pageSize: number;
-    postType: number;
-    sort: number;
+    page?: number;
+    pageSize?: number;
+    postType: PostTypeValue;
+    sort: PostSortValue;
 }
 
 /** 帖子列表响应结构，对应后端 ListResp。 */

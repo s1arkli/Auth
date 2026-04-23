@@ -52,7 +52,7 @@ async function request<T>(url: string, options?: RequestInit): Promise<T> {
     const json = await res.json() as apiResponse<T>;
     logRequest(method, url, reqParams, json);
 
-    if (json.code != 200) {
+    if (json.code !== 0) {
         throw new BizError(json.code, json.msg);
     }
 

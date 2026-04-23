@@ -1,19 +1,26 @@
 import "./index.css";
-import type { ListItem } from "../../types/api/post";
+import dayjs from "dayjs"
+import type {ListItem} from "../../../../types/api/post";
 
 export default function PostCard(data: ListItem) {
-    const createdAtText = new Date(data.createdAt).toLocaleString("zh-CN", {
-        month: "numeric",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-    });
+    const now = dayjs();
+    const target = dayjs(data.createdAt * 1000);
+    const diffDays = now.startOf("day").diff(target.startOf("day"), "day");
+
+    let createdAtText: string;
+    if (diffDays === 0) {
+        createdAtText = `今天`;
+    } else if (diffDays === 1) {
+        createdAtText = `昨天`;
+    } else {
+        createdAtText = target.format("YYYY-MM-DD HH:mm");
+    }
 
     return (
         <article className="post-card">
             <header className="post-card__header">
                 <div className="post-card__author-row">
-                    <img className="post-card__avatar" src={data.avatar} alt={`${data.nickname} 的头像`} />
+                    <img className="post-card__avatar" src="/default-shark-avatar.svg" alt={`${data.nickname} 的头像`} />
                     <div className="post-card__author-meta">
                         <span className="post-card__author">{data.nickname}</span>
                         {data.isTopped ? <span className="post-card__tag">置顶</span> : null}
